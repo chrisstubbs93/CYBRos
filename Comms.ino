@@ -1,6 +1,16 @@
 /**
     \file Comms.ino
     Handles serial comms.
+
+    REPL commands: (not implemented yet)
+    q - quiet - mute all telemetry streaming
+    v - verbose - unmute all telemetry streaming
+    t - telemetry - toggle local telemetry
+    g - gateway - toggle gateway of hoverboard telemetry
+    l - list files - list datalog files on SD card
+    sn - send file - send contents of file n.txt
+    dy - delete all - delete all data, confirm with y, any other letter will cancel
+
 */
 
 int nmea0183_checksum(char *nmea_data)
@@ -65,4 +75,6 @@ void sendoldtelem() {
 
   Serial.println(buf);
 }
+
+
 

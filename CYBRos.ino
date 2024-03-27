@@ -1,6 +1,7 @@
 /**
     \file CYBRos.ino
     Main file for the CYBR TRK hacky racer controller by Chris Stubbs.
+    Compatible with hoverboard firmware: https://github.com/chrisstubbs93/hoverboard-firmware-hack-FOC
 */
 
 //input: -100% to 100% of steering range over serial
@@ -14,9 +15,6 @@
 
 #include "Settings.h"
 #include "Globals.h"
-
-SoftwareSerial HoverSerial(12, 4);  // RX, TX
-
 
 Smoothed<int> SteeringWheelVal;
 Smoothed<int> SteeringFeedbackVal;  //now FuseADC not anymore!!
@@ -44,8 +42,14 @@ void setup() {
   initGPIO();
   initAnalog();
 
-  Serial.begin(115200);                  //hardware serial to pi
-  HoverSerial.begin(HOVER_SERIAL_BAUD);  //software serial to hoverboard
+  Serial.begin(115200); //Serial to USB / Interface
+  Serial1.begin(HOVER_SERIAL_BAUD); //Serial to front HB
+  Serial2.begin(HOVER_SERIAL_BAUD); //Serial to rear HB 1
+  Serial3.begin(HOVER_SERIAL_BAUD); //Serial to rear HB 2
+
+  Hoverboard[0].port = &Serial1;
+  Hoverboard[1].port = &Serial2;
+  Hoverboard[2].port = &Serial3;
 
   setupThrottleFuseControl();
 }
@@ -55,6 +59,8 @@ void loop() {
   unsigned long currentMillisA = millis();  // store the current time
   processAnalog();
   checkFootAndHandBrakeHeld();  //power up hoverboards if brakes held. Note blocking while held.
+
+  Receive(*Hoverboard[0].port, Hoverboard[0].Feedback, Hoverboard[0].NewFeedback);
 
   if (currentMillisA - previousMillisA >= interval) {  // Wait for next tick
     previousMillisA = currentMillisA;

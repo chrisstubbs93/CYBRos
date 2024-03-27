@@ -3,6 +3,9 @@
     Contains user settings and presets that can be changed for build.
 */
 
+#ifndef SETTINGS_H
+#define SETTINGS_H
+
 /**
 //======================Definitions for hardware OLD=======================
 #define SteeringWheelPin A0 //smoothed
@@ -98,3 +101,5 @@ int PedalCentre = 550;
 float revspd = 0.5; //reverse throttle map multiplier
 int pedaldeadband = 50;
 int SteerCentreOffset = 0; //offset from steering straight in ADC counts
+
+#endif
