@@ -40,6 +40,7 @@ int I_reading = 0;
 int pedalval = 0;
 
 long interval = 50;       // time constant for tick
+
 unsigned long previousMillisA = 0;
 
 void setup() {
@@ -68,13 +69,19 @@ void loop() {
   processAnalog();
   //checkFootAndHandBrakeHeld();  //power up hoverboards if brakes held. Note blocking while held.
   buzzerTick();
-  Receive(*Hoverboard[0].port, Hoverboard[0].Feedback, Hoverboard[0].NewFeedback);
+  Receive(*Hoverboard[0].port, Hoverboard[0].Feedback, Hoverboard[0].NewFeedback, Hoverboard[0].lastTimestamp);
 
 
   if (currentMillisA - previousMillisA >= interval) {  // Wait for next tick
     previousMillisA = currentMillisA;
     throttlecontrol();
     
-    ///sendoldtelem();
+    sendoldtelem();
+    sendHovertelem(Hoverboard[0].Feedback, 0);
+    isHoverboardConnected(0); //if disconnected, and ignition on, try to power on.
   }
+
+  // char looptime[128];
+  // sprintf(looptime, "Loop time: %i", (millis()-currentMillisA));
+  // sendInfo(looptime);
 }

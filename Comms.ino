@@ -26,7 +26,7 @@ int nmea0183_checksum(char *nmea_data)
 }
 
 void sendError(char *msg) {
-  buzzerEvent();
+  //buzzerEvent();
   sprintf(buf, "$ERROR,");
   sprintf(buf, "%s%s", buf, msg);
   sprintf(buf, "%s*%02X", buf, nmea0183_checksum(buf));
@@ -90,6 +90,39 @@ void sendoldtelem() {
 
   //sentbrake (0-1000)
   sprintf(buf, "%s,%d", buf, brkcmd);
+
+  //checksum
+  sprintf(buf, "%s*%02X", buf, nmea0183_checksum(buf));
+
+  Serial.println(buf);
+}
+
+void sendHovertelem(SerialFeedback &Feedback, int hbnum) {
+  //    int16_t  cmd1;
+  //    int16_t  cmd2;
+  //    int16_t  speedR_meas;
+  //    int16_t  speedL_meas;
+  //    int16_t  batVoltage;
+  //    int16_t  dcCurrent;
+  //    int16_t  boardTemp;
+  //    uint16_t cmdLed;
+
+  // $STEER,0,D,0,-9,-63,0,0,0.67,0,0,0,0,0*2E out of date
+
+  sprintf(buf, "$HB");
+
+  //timestamp
+
+  sprintf(buf, "%s,%d", buf, hbnum);
+
+  sprintf(buf, "%s,%d", buf, Feedback.cmd1);
+  sprintf(buf, "%s,%d", buf, Feedback.cmd2);
+  sprintf(buf, "%s,%d", buf, Feedback.speedR_meas);
+  sprintf(buf, "%s,%d", buf, Feedback.speedL_meas);
+  sprintf(buf, "%s,%d", buf, Feedback.batVoltage);
+  sprintf(buf, "%s,%d", buf, Feedback.dcCurrent);
+  sprintf(buf, "%s,%d", buf, Feedback.boardTemp);
+  sprintf(buf, "%s,%u", buf, Feedback.cmdLed);
 
   //checksum
   sprintf(buf, "%s*%02X", buf, nmea0183_checksum(buf));

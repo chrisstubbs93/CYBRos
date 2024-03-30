@@ -38,7 +38,56 @@ void Send(int16_t uSteer, int16_t uSpeed, int16_t brake, int16_t driveMode)
 }
 
 
-void Receive(Stream &port, SerialFeedback &Feedback, SerialFeedback &NewFeedback)
+void Receive(Stream &port, SerialFeedback &Feedback, SerialFeedback &NewFeedback, unsigned long &lastTimestamp)
+{
+  while(port.available()>0){
+      // Check for new data availability in the Serial buffer
+      if (port.available()) {
+        for (int x = 0; x < sizeof(telemBuffer)-1; x++) {
+          telemBuffer[x] = telemBuffer[x+1]; //cycle the buffer
+        }
+        telemBuffer[sizeof(telemBuffer)-1] = port.read();
+        bufStartFrame	= ((uint16_t)(telemBuffer[1]) << 8) | (uint16_t)telemBuffer[0];       // Construct the start frame
+      }
+      else {
+          return;
+      }
+      NewFeedback.start = ((uint16_t)(telemBuffer[1]) << 8) | (uint16_t)telemBuffer[0];
+      NewFeedback.cmd1 = ((uint16_t)(telemBuffer[3]) << 8) | (uint16_t)telemBuffer[2];
+      NewFeedback.cmd2 = ((uint16_t)(telemBuffer[5]) << 8) | (uint16_t)telemBuffer[4];
+      NewFeedback.speedR_meas = ((uint16_t)(telemBuffer[7]) << 8) | (uint16_t)telemBuffer[6];
+      NewFeedback.speedL_meas = ((uint16_t)(telemBuffer[9]) << 8) | (uint16_t)telemBuffer[8];
+      NewFeedback.batVoltage = ((uint16_t)(telemBuffer[11]) << 8) | (uint16_t)telemBuffer[10];
+      NewFeedback.dcCurrent = ((uint16_t)(telemBuffer[13]) << 8) | (uint16_t)telemBuffer[12];
+      NewFeedback.boardTemp = ((uint16_t)(telemBuffer[15]) << 8) | (uint16_t)telemBuffer[14];
+      NewFeedback.cmdLed = ((uint16_t)(telemBuffer[17]) << 8) | (uint16_t)telemBuffer[16];
+      NewFeedback.checksum = ((uint16_t)(telemBuffer[19]) << 8) | (uint16_t)telemBuffer[18];
+      uint16_t checksum;
+      checksum = (uint16_t)(NewFeedback.start ^ NewFeedback.cmd1 ^ NewFeedback.cmd2 ^ NewFeedback.speedR_meas ^ NewFeedback.speedL_meas
+                          ^ NewFeedback.batVoltage ^ NewFeedback.dcCurrent ^ NewFeedback.boardTemp ^ NewFeedback.cmdLed);
+      // Check validity of the new data
+      if (bufStartFrame == START_FRAME && checksum == NewFeedback.checksum) {
+          // Copy the new data
+          memcpy(&Feedback, &NewFeedback, sizeof(SerialFeedback));
+          lastTimestamp = millis();
+      } else {
+        //decode fail
+      }
+  }
+}
+
+bool isHoverboardConnected(int hb){
+  if (millis() - Hoverboard[hb].lastTimestamp > HB_TIMEOUT){
+    char disconnectWarn[128];
+    sprintf(disconnectWarn, "Hoverboard %i disconnected for %d", hb, (millis() - Hoverboard[hb].lastTimestamp));
+    sendError(disconnectWarn);
+    return false;
+  } else {
+    return true;
+  }
+}
+
+void Receiveold(Stream &port, SerialFeedback &Feedback, SerialFeedback &NewFeedback)
 {
     // Check for new data availability in the Serial buffer
     if (port.available()) {
@@ -97,4 +146,10 @@ void Receive(Stream &port, SerialFeedback &Feedback, SerialFeedback &NewFeedback
 
     // Update previous states
     incomingBytePrev = incomingByte;
+}
+
+void serialFlush(Stream &port){
+  while(port.available() > 0) {
+    char t = port.read();
+  }
 }

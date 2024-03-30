@@ -95,6 +95,7 @@
 #define START_FRAME         0xABCD       // [-] Start frme definition for reliable serial communication
 #define SPD_MODE            2            // [-] SPEED mode
 #define TRQ_MODE            3            // [-] TORQUE mode
+#define HB_TIMEOUT          1000          // in ms
 
 //======================Settings=======================
 int PedalCentre = 550;//old

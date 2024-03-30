@@ -18,6 +18,7 @@ uint16_t bufStartFrame;                 // Buffer Start Frame
 byte *p;                                // Pointer declaration for the new received data
 byte incomingByte;
 byte incomingBytePrev;
+byte telemBuffer[20];
 
 typedef struct {
   uint16_t start;
@@ -46,6 +47,7 @@ typedef struct{
   Stream *port;
   SerialFeedback Feedback;
   SerialFeedback NewFeedback;
+  unsigned long lastTimestamp;
 } Hboard;
 Hboard Hoverboard[3];
 
