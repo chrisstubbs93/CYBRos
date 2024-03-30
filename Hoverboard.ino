@@ -57,6 +57,7 @@ void Receive(Stream &port, SerialFeedback &Feedback, SerialFeedback &NewFeedback
 
     // Copy received data
     if (bufStartFrame == START_FRAME) {	                    // Initialize if new data is detected
+        Serial.println("Start byte");
         p       = (byte *)&NewFeedback;
         *p++    = incomingBytePrev;
         *p++    = incomingByte;
@@ -70,7 +71,7 @@ void Receive(Stream &port, SerialFeedback &Feedback, SerialFeedback &NewFeedback
     if (idx == sizeof(SerialFeedback)) {
         uint16_t checksum;
         checksum = (uint16_t)(NewFeedback.start ^ NewFeedback.cmd1 ^ NewFeedback.cmd2 ^ NewFeedback.speedR_meas ^ NewFeedback.speedL_meas
-                            ^ NewFeedback.batVoltage ^ NewFeedback.boardTemp ^ NewFeedback.cmdLed);
+                            ^ NewFeedback.batVoltage ^ NewFeedback.dcCurrent ^ NewFeedback.boardTemp ^ NewFeedback.cmdLed);
 
         // Check validity of the new data
         if (NewFeedback.start == START_FRAME && checksum == NewFeedback.checksum) {
@@ -89,6 +90,9 @@ void Receive(Stream &port, SerialFeedback &Feedback, SerialFeedback &NewFeedback
           Serial.println("Non-valid data skipped");
         }
         idx = 0;    // Reset the index (it prevents to enter in this if condition in the next cycle)
+    } else {
+      Serial.print("idx:");
+      Serial.println(idx);
     }
 
     // Update previous states

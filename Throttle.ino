@@ -26,12 +26,13 @@ void throttlecontrol(){
       manualBraking = true;
       drvcmd = 0;
       brkcmd = 1000;
+      sendInfo("Manual Braking");
       Send(0, drvcmd, brkcmd, currentDriveMode);  //also regenbrake if manual braking //TDOD test this works?
     } else {                                      //brake is not on
       manualBraking = false;
       //TODO: and check if in local mode
-      if (AccelPedalVal.get() - PedalCentre > pedaldeadband) {
-        drvcmd = map(AccelPedalVal.get() - PedalCentre, pedaldeadband, (1023 - PedalCentre), 0, 1200);
+      if (AccelPedalVal.get() > AccelPedalStart) {
+        drvcmd = map(AccelPedalVal.get(), AccelPedalStart, AccelPedalEnd, 0, 1200);
         brkcmd = 0;
         //hoverboard firmware input range is -1000 to 1000 (or 1200 lol)
         if (digitalRead(DriveSwPin)) {
@@ -45,8 +46,8 @@ void throttlecontrol(){
           brkcmd = 0;
           Send(0, drvcmd, brkcmd, currentDriveMode);
         }
-      } else if (AccelPedalVal.get() - PedalCentre < (0 - pedaldeadband)) {                      //brake
-        brkcmd = map(PedalCentre - AccelPedalVal.get(), pedaldeadband, (PedalCentre), 0, 1000);  //500 = full brake
+      } else if (BrakePedalVal.get() > BrakePedalStart) {                      //brake //should probably chheck this first
+        brkcmd = map(BrakePedalVal.get(), BrakePedalStart, BrakePedalEnd, 0, 1000);  //500 = full brake
         drvcmd = 0;
         Send(0, drvcmd, brkcmd, currentDriveMode);
       } else {

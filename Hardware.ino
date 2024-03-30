@@ -3,6 +3,8 @@
     Handles initialisation of GPIO, scanning of buttons.
 */
 
+ezBuzzer buzzer(BuzzerPin); // create ezBuzzer object that attach to a pin;
+
 /*! Initialise the GPIO pins. */
 void initGPIO() {
   pinMode(BuzzerPin, OUTPUT);
@@ -82,4 +84,14 @@ void checkFootAndHandBrakeHeld(){
       }
     }
   }
+}
+
+void buzzerTick(){
+  buzzer.loop();
+}
+
+void buzzerEvent(){
+  int melody[] = {NOTE_E5, NOTE_G5};
+  int noteDurations[] = {8, 4};
+  buzzer.playMelody(melody, noteDurations, sizeof(noteDurations) / sizeof(int)); // playing
 }

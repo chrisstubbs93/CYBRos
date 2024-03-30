@@ -97,9 +97,13 @@
 #define TRQ_MODE            3            // [-] TORQUE mode
 
 //======================Settings=======================
-int PedalCentre = 550;
+int PedalCentre = 550;//old
 float revspd = 0.5; //reverse throttle map multiplier
 int pedaldeadband = 50;
+#define AccelPedalStart 200
+#define AccelPedalEnd 875
+#define BrakePedalStart 250
+#define BrakePedalEnd 875
 int SteerCentreOffset = 0; //offset from steering straight in ADC counts
 
 #endif

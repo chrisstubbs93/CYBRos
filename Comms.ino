@@ -12,6 +12,7 @@
     dy - delete all - delete all data, confirm with y, any other letter will cancel
 
 */
+  char buf[128];
 
 int nmea0183_checksum(char *nmea_data)
 {
@@ -24,6 +25,24 @@ int nmea0183_checksum(char *nmea_data)
   return crc;
 }
 
+void sendError(char *msg) {
+  buzzerEvent();
+  sprintf(buf, "$ERROR,");
+  sprintf(buf, "%s%s", buf, msg);
+  sprintf(buf, "%s*%02X", buf, nmea0183_checksum(buf));
+  Serial.println(buf);
+  logSD(buf);
+}
+
+void sendInfo(char *msg) {
+  sprintf(buf, "$INFO,");
+  sprintf(buf, "%s%s", buf, msg);
+  sprintf(buf, "%s*%02X", buf, nmea0183_checksum(buf));
+  Serial.println(buf);
+  logSD(buf);
+}
+
+
 void sendoldtelem() {
   //structure: $STEER,INPUT,GEAR,MANUALBRAKE,PEDALAVG,FUSEADC,
   //THROTTLEIP,THROTTLEOP,SHUNTADC,CURRENTOP(not used),
@@ -31,8 +50,7 @@ void sendoldtelem() {
 
   // $STEER,0,D,0,-9,-63,0,0,0.67,0,0,0,0,0*2E out of date
 
-  char buf[64];
-  sprintf(buf, "$STEER");
+  sprintf(buf, "$CON");
 
   //GEAR: D/N/R
   if (digitalRead(DriveSwPin)) {
@@ -46,8 +64,11 @@ void sendoldtelem() {
   //manualbrake 0/1 (1 is braking)
   sprintf(buf, "%s,%d", buf, manualBraking);
 
-  //pedalavg (-550 (e-brake) - 0 - ~+500 (full accel))
-  sprintf(buf, "%s,%d", buf, AccelPedalVal.get() - PedalCentre);
+  //Accel input 
+  sprintf(buf, "%s,%d", buf, AccelPedalVal.get());
+
+  //Brake input
+  sprintf(buf, "%s,%d", buf, BrakePedalVal.get());
 
   //fuseADC in adc counts
   sprintf(buf, "%s,%d", buf, (SteeringFeedbackVal.get()*10)/2); //was pos

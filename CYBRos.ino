@@ -12,6 +12,10 @@
 #include <PID_v1.h>    //PID loop from http://playground.arduino.cc/Code/PIDLibrary
 #include <Smoothed.h>  // from https://www.arduino.cc/reference/en/libraries/smoothed/ //works in ide 1.8.19 //doesn't work properly with signed ints, apply on raw adc only.
 #include <SoftwareSerial.h>
+#include <ezBuzzer.h> // ezBuzzer library
+#include <SPI.h>
+#include <SD.h>
+//https://github.com/SpacehuhnTech/SimpleCLI
 
 #include "Settings.h"
 #include "Globals.h"
@@ -52,19 +56,25 @@ void setup() {
   Hoverboard[2].port = &Serial3;
 
   setupThrottleFuseControl();
+
+  SDinit();
+
+  //buzzerEvent();
 }
 
 
 void loop() {
   unsigned long currentMillisA = millis();  // store the current time
   processAnalog();
-  checkFootAndHandBrakeHeld();  //power up hoverboards if brakes held. Note blocking while held.
-
+  //checkFootAndHandBrakeHeld();  //power up hoverboards if brakes held. Note blocking while held.
+  buzzerTick();
   Receive(*Hoverboard[0].port, Hoverboard[0].Feedback, Hoverboard[0].NewFeedback);
+
 
   if (currentMillisA - previousMillisA >= interval) {  // Wait for next tick
     previousMillisA = currentMillisA;
     throttlecontrol();
-    sendoldtelem();
+    
+    ///sendoldtelem();
   }
 }
