@@ -9,15 +9,15 @@
 
 void powerOnHB(){
         digitalWrite(FHBPwrCommandPin, HIGH);
-        delay(500);
+        delay(5000);
         digitalWrite(FHBPwrCommandPin, LOW);
 
         digitalWrite(RHB1PwrCommandPin, HIGH);
-        delay(500);
+        delay(5000);
         digitalWrite(RHB1PwrCommandPin, LOW);
         
         digitalWrite(RHB2PwrCommandPin, HIGH);
-        delay(500);
+        delay(5000);
         digitalWrite(RHB2PwrCommandPin, LOW);
 }
 

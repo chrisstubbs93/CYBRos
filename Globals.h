@@ -13,6 +13,7 @@ int drvcmd;
 
 // Global variables for hoverboard
 int16_t currentDriveMode = TRQ_MODE;
+int maxthrottle = 1200;
 uint8_t idx = 0;                        // Index for new data pointer
 uint16_t bufStartFrame;                 // Buffer Start Frame
 byte *p;                                // Pointer declaration for the new received data

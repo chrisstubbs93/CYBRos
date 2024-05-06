@@ -32,7 +32,7 @@ void throttlecontrol(){
       manualBraking = false;
       //TODO: and check if in local mode
       if (AccelPedalVal.get() > AccelPedalStart) {
-        drvcmd = map(AccelPedalVal.get(), AccelPedalStart, AccelPedalEnd, 0, 1200);
+        drvcmd = map(AccelPedalVal.get(), AccelPedalStart, AccelPedalEnd, 0, maxthrottle);
         brkcmd = 0;
         //hoverboard firmware input range is -1000 to 1000 (or 1200 lol)
         if (digitalRead(DriveSwPin)) {

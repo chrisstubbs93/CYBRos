@@ -67,6 +67,16 @@ void processAnalog(){
   ShuntADC.add(analogRead(ShuntMonPin));
 }
 
+void processDigital(){
+  if(digitalRead(TrqSpdSwPin)){
+   currentDriveMode = SPD_MODE;
+   maxthrottle = maxthrottleSPD;
+  } else {
+   currentDriveMode = TRQ_MODE;
+   maxthrottle = maxthrottleTRQ;
+  }
+}
+
 void checkFootAndHandBrakeHeld(){
     //manual power up routine for hoverboards
   if (!digitalRead(DriveSwPin) && !digitalRead(RevSwPin)) {

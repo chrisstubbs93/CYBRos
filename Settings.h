@@ -83,7 +83,7 @@
 #define DriveSwPin 28 //J6-3
 #define RevSwPin 29 //J6-4
 #define ParkSwPin 30  //J6-5
-#define TrqSpdSwPin 31 //J6-6
+#define TrqSpdSwPin 31 //J6-6 HIGH for SPD, LOW (open) for TRQ
 #define LightsSwPin 32 //J6-7
 
 //Other interfaces (J7/17/18 H Bridge channels, J21 GenDIO, J10 RCinputs) are not yet defined/implemented
@@ -100,6 +100,8 @@
 //======================Settings=======================
 int PedalCentre = 550;//old
 float revspd = 0.5; //reverse throttle map multiplier
+int maxthrottleTRQ = 1200; //Max throttle command (in TRQ mode)
+int maxthrottleSPD = 100; //Max throttle command (in SPD mode)
 int pedaldeadband = 50;
 #define AccelPedalStart 200
 #define AccelPedalEnd 875

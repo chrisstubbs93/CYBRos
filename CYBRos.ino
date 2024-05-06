@@ -67,9 +67,12 @@ void setup() {
 void loop() {
   unsigned long currentMillisA = millis();  // store the current time
   processAnalog();
+  processDigital();
   //checkFootAndHandBrakeHeld();  //power up hoverboards if brakes held. Note blocking while held.
   buzzerTick();
   Receive(*Hoverboard[0].port, Hoverboard[0].Feedback, Hoverboard[0].NewFeedback, Hoverboard[0].lastTimestamp);
+  Receive(*Hoverboard[1].port, Hoverboard[1].Feedback, Hoverboard[1].NewFeedback, Hoverboard[1].lastTimestamp);
+  Receive(*Hoverboard[2].port, Hoverboard[2].Feedback, Hoverboard[2].NewFeedback, Hoverboard[2].lastTimestamp);
 
 
   if (currentMillisA - previousMillisA >= interval) {  // Wait for next tick
@@ -78,7 +81,12 @@ void loop() {
     
     sendoldtelem();
     sendHovertelem(Hoverboard[0].Feedback, 0);
-    isHoverboardConnected(0); //if disconnected, and ignition on, try to power on.
+    sendHovertelem(Hoverboard[1].Feedback, 1);
+    sendHovertelem(Hoverboard[2].Feedback, 2);
+
+    isHoverboardConnected(0); //if disconnected, and ignition on, try to power on (relays not implemented yet).
+    isHoverboardConnected(1);
+    isHoverboardConnected(2);
   }
 
   // char looptime[128];
