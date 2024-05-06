@@ -26,7 +26,7 @@ int nmea0183_checksum(char *nmea_data)
 }
 
 void sendError(char *msg) {
-  //buzzerEvent();
+  buzzerEvent();
   sprintf(buf, "$ERROR,");
   sprintf(buf, "%s%s", buf, msg);
   sprintf(buf, "%s*%02X", buf, nmea0183_checksum(buf));

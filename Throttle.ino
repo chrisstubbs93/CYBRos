@@ -30,7 +30,6 @@ void throttlecontrol(){
       Send(0, drvcmd, brkcmd, currentDriveMode);  //also regenbrake if manual braking //TDOD test this works?
     } else {                                      //brake is not on
       manualBraking = false;
-      //TODO: and check if in local mode
       if (AccelPedalVal.get() > AccelPedalStart) {
         drvcmd = map(AccelPedalVal.get(), AccelPedalStart, AccelPedalEnd, 0, maxthrottle);
         brkcmd = 0;
@@ -79,6 +78,10 @@ int ThrottleFuseControl(int throttleSP) {
   // Serial.println(Output3Throttle);
 
   //TODO datalog loop inputs, outputs, modes. Do tuning
+  //TODO switch to feed fusemon or digital current feedback in to control loop
+  //TODO implement torque split
+
+
 
   //take minimum loop output
   if (abs(throttleSP) <= abs(Output3Throttle)) {

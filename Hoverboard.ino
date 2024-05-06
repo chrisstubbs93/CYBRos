@@ -23,18 +23,47 @@ void powerOnHB(){
 
 void Send(int16_t uSteer, int16_t uSpeed, int16_t brake, int16_t driveMode)
 {
-  // Create command
-  Command.start    = (uint16_t)START_FRAME;
-  Command.steer    = (int16_t)uSteer;
-  Command.speed    = (int16_t)uSpeed;
-  Command.brake    = (int16_t)brake;
-  Command.driveMode = (int16_t)driveMode;
-  Command.checksum = (uint16_t)(Command.start ^ Command.steer ^ Command.speed ^ Command.brake ^ Command.driveMode);
+
+  int16_t uSpeed0, uSpeed1, uSpeed2;
+
+  if(currentDriveMode == TRQ_MODE){
+    //uSpeed0 = map(uSpeed,0,maxthrottleTRQ,0,FHBpowerSplit);
+    //uSpeed1 = map(uSpeed,0,maxthrottleTRQ,0,RHB1powerSplit);
+    //uSpeed2 = map(uSpeed,0,maxthrottleTRQ,0,RHB2powerSplit);
+    uSpeed0 = uSpeed;
+    uSpeed1 = uSpeed;
+    uSpeed2 = uSpeed;
+  } else {
+    uSpeed0 = uSpeed;
+    uSpeed1 = uSpeed;
+    uSpeed2 = uSpeed;
+  }
+  // Create commands
+  Hoverboard[0].Command.start    = (uint16_t)START_FRAME;
+  Hoverboard[0].Command.steer    = (int16_t)uSteer;
+  Hoverboard[0].Command.speed    = (int16_t)uSpeed0;
+  Hoverboard[0].Command.brake    = (int16_t)brake;
+  Hoverboard[0].Command.driveMode = (int16_t)driveMode;
+  Hoverboard[0].Command.checksum = (uint16_t)(Hoverboard[0].Command.start ^ Hoverboard[0].Command.steer ^ Hoverboard[0].Command.speed ^ Hoverboard[0].Command.brake ^ Hoverboard[0].Command.driveMode);
+
+  Hoverboard[1].Command.start    = (uint16_t)START_FRAME;
+  Hoverboard[1].Command.steer    = (int16_t)uSteer;
+  Hoverboard[1].Command.speed    = (int16_t)uSpeed1;
+  Hoverboard[1].Command.brake    = (int16_t)brake;
+  Hoverboard[1].Command.driveMode = (int16_t)driveMode;
+  Hoverboard[1].Command.checksum = (uint16_t)(Hoverboard[1].Command.start ^ Hoverboard[1].Command.steer ^ Hoverboard[1].Command.speed ^ Hoverboard[1].Command.brake ^ Hoverboard[1].Command.driveMode);
+
+  Hoverboard[2].Command.start    = (uint16_t)START_FRAME;
+  Hoverboard[2].Command.steer    = (int16_t)uSteer;
+  Hoverboard[2].Command.speed    = (int16_t)uSpeed2;
+  Hoverboard[2].Command.brake    = (int16_t)brake;
+  Hoverboard[2].Command.driveMode = (int16_t)driveMode;
+  Hoverboard[2].Command.checksum = (uint16_t)(Hoverboard[2].Command.start ^ Hoverboard[2].Command.steer ^ Hoverboard[2].Command.speed ^ Hoverboard[2].Command.brake ^ Hoverboard[2].Command.driveMode);
 
   // Write to all hoverboards
-  Serial1.write((uint8_t *) &Command, sizeof(Command));
-  Serial2.write((uint8_t *) &Command, sizeof(Command));
-  Serial3.write((uint8_t *) &Command, sizeof(Command));
+  Serial1.write((uint8_t *) &Hoverboard[0].Command, sizeof(Hoverboard[0].Command));
+  Serial2.write((uint8_t *) &Hoverboard[1].Command, sizeof(Hoverboard[1].Command));
+  Serial3.write((uint8_t *) &Hoverboard[2].Command, sizeof(Hoverboard[2].Command));
 }
 
 
@@ -81,10 +110,37 @@ bool isHoverboardConnected(int hb){
     char disconnectWarn[128];
     sprintf(disconnectWarn, "Hoverboard %i disconnected for %d", hb, (millis() - Hoverboard[hb].lastTimestamp));
     sendError(disconnectWarn);
+
+    if (millis() - Hoverboard[hb].lastTimestamp > HB_TIMEOUT_START){
+      if (millis() - Hoverboard[hb].restartTimestamp > HB_RESTART_WAIT){
+        char restartWarn[128];
+        sprintf(restartWarn, "Hoverboard %i restarting", hb);
+        sendError(restartWarn);
+        if(hb == 0) {
+          digitalWrite(FHBPwrCommandPin, HIGH);
+          delay(200);
+          digitalWrite(FHBPwrCommandPin, LOW);
+          Hoverboard[hb].restartTimestamp = millis();
+        }
+        if(hb == 1) {
+          digitalWrite(RHB1PwrCommandPin, HIGH);
+          delay(200);
+          digitalWrite(RHB1PwrCommandPin, LOW);
+          Hoverboard[hb].restartTimestamp = millis();
+        }
+        if(hb == 2) {
+          digitalWrite(RHB2PwrCommandPin, HIGH);
+          delay(200);
+          digitalWrite(RHB2PwrCommandPin, LOW);
+          Hoverboard[hb].restartTimestamp = millis();
+        }
+      }
+    }
     return false;
   } else {
     return true;
   }
+
 }
 
 void Receiveold(Stream &port, SerialFeedback &Feedback, SerialFeedback &NewFeedback)

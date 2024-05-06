@@ -95,13 +95,21 @@
 #define START_FRAME         0xABCD       // [-] Start frme definition for reliable serial communication
 #define SPD_MODE            2            // [-] SPEED mode
 #define TRQ_MODE            3            // [-] TORQUE mode
-#define HB_TIMEOUT          1000          // in ms
+#define HB_TIMEOUT          1000          // in ms for warning
+#define HB_TIMEOUT_START    3000          // in ms to triger restart
+#define HB_RESTART_WAIT     10000          // in ms before retrying restart
 
 //======================Settings=======================
 int PedalCentre = 550;//old
 float revspd = 0.5; //reverse throttle map multiplier
+
 int maxthrottleTRQ = 1200; //Max throttle command (in TRQ mode)
-int maxthrottleSPD = 100; //Max throttle command (in SPD mode)
+int maxthrottleSPD = 1200; //Max throttle command (in SPD mode) //was 100
+
+int FHBpowerSplit = maxthrottleTRQ*0.50; //% max power of front HB in TRQ mode
+int RHB1powerSplit = maxthrottleTRQ*1.00; //% max power of rear1 HB in TRQ mode
+int RHB2powerSplit = RHB1powerSplit; //% max power of rear2 HB in TRQ mode
+
 #define Brakehallthreshold 250
 int pedaldeadband = 50;
 #define AccelPedalStart 200

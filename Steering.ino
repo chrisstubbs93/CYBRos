@@ -3,6 +3,11 @@
     Handles closed loop steering control (disabled).
 */
 
+//input: -100% to 100% of steering range over serial
+//t o d o: detect failure to control
+//t o d o: detect motor vin
+//t o d o: lockout if values are out of safe range
+
 /**
 // PID for posn control
 double Pk1 = 7;  //speed it gets there

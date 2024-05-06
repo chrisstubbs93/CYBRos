@@ -4,10 +4,7 @@
     Compatible with hoverboard firmware: https://github.com/chrisstubbs93/hoverboard-firmware-hack-FOC
 */
 
-//input: -100% to 100% of steering range over serial
-//todo: detect failure to control
-//todo: detect motor vin
-//todo: lockout if values are out of safe range
+//TODO implement startup relays
 
 #include <PID_v1.h>    //PID loop from http://playground.arduino.cc/Code/PIDLibrary
 #include <Smoothed.h>  // from https://www.arduino.cc/reference/en/libraries/smoothed/ //works in ide 1.8.19 //doesn't work properly with signed ints, apply on raw adc only.

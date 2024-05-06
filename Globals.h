@@ -29,7 +29,7 @@ typedef struct {
   int16_t  driveMode;
   uint16_t checksum;
 } SerialCommand;
-SerialCommand Command;
+//SerialCommand Command;
 
 typedef struct{
    uint16_t start;
@@ -48,7 +48,9 @@ typedef struct{
   Stream *port;
   SerialFeedback Feedback;
   SerialFeedback NewFeedback;
+  SerialCommand Command;
   unsigned long lastTimestamp;
+  unsigned long restartTimestamp = 5000; //init to allow startup conditions with some HBs already on.
 } Hboard;
 Hboard Hoverboard[3];
 
