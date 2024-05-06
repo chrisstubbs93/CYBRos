@@ -102,6 +102,7 @@ int PedalCentre = 550;//old
 float revspd = 0.5; //reverse throttle map multiplier
 int maxthrottleTRQ = 1200; //Max throttle command (in TRQ mode)
 int maxthrottleSPD = 100; //Max throttle command (in SPD mode)
+#define Brakehallthreshold 250
 int pedaldeadband = 50;
 #define AccelPedalStart 200
 #define AccelPedalEnd 875

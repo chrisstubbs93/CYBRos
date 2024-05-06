@@ -75,6 +75,13 @@ void processDigital(){
    currentDriveMode = TRQ_MODE;
    maxthrottle = maxthrottleTRQ;
   }
+
+  //Front lights
+  digitalWrite(FLightPin, digitalRead(LightsSwPin));
+
+  //Brake lights
+  digitalWrite(RLightPin, (analogRead(BrakeHallPin) > Brakehallthreshold || digitalRead(ParkSwPin) || BrakePedalVal.get() > BrakePedalStart));
+
 }
 
 void checkFootAndHandBrakeHeld(){
