@@ -68,7 +68,7 @@ void processAnalog(){
 }
 
 void processDigital(){
-  if(digitalRead(TrqSpdSwPin)){
+  if(digitalRead(TrqSpdSwPin) || digitalRead(ParkSwPin)){
    currentDriveMode = SPD_MODE;
    maxthrottle = maxthrottleSPD;
   } else {
