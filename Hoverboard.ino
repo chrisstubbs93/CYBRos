@@ -6,21 +6,6 @@
 #include "Settings.h"
 #include "Globals.h"
 
-
-void powerOnHB(){
-        digitalWrite(FHBPwrCommandPin, HIGH);
-        delay(5000);
-        digitalWrite(FHBPwrCommandPin, LOW);
-
-        digitalWrite(RHB1PwrCommandPin, HIGH);
-        delay(5000);
-        digitalWrite(RHB1PwrCommandPin, LOW);
-        
-        digitalWrite(RHB2PwrCommandPin, HIGH);
-        delay(5000);
-        digitalWrite(RHB2PwrCommandPin, LOW);
-}
-
 void Send(int16_t uSteer, int16_t uSpeed, int16_t brake, int16_t driveMode)
 {
 

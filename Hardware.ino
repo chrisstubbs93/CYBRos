@@ -92,7 +92,7 @@ void checkFootAndHandBrakeHeld(){
       //holding foot brake
       if (ManualBrakeVal.get() > 250) {
         //holding hand brake
-        powerOnHB();
+        //do something 
         while (ManualBrakeVal.get() > 250)
         {
           //wait until released
