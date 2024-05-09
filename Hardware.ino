@@ -105,10 +105,18 @@ void checkFootAndHandBrakeHeld(){
 
 void buzzerTick(){
   buzzer.loop();
+  //Serial.print("Buzzer state: ");
+  //Serial.println(buzzer.getState());
 }
 
 void buzzerEvent(){
   int melody[] = {NOTE_E5, NOTE_G5};
   int noteDurations[] = {8, 4};
-  buzzer.playMelody(melody, noteDurations, sizeof(noteDurations) / sizeof(int)); // playing
+
+  //if(buzzer.getState() == BUZZER_IDLE){
+    buzzer.playMelody(melody, noteDurations, sizeof(noteDurations) / sizeof(int)); // playing
+  //}
+  //else {
+  //  Serial.println("Waiting for buzzer");
+  //}
 }

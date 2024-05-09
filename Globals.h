@@ -51,6 +51,7 @@ typedef struct{
   SerialCommand Command;
   unsigned long lastTimestamp;
   unsigned long restartTimestamp = 5000; //init to allow startup conditions with some HBs already on.
+  bool enabled = false;
 } Hboard;
 Hboard Hoverboard[3];
 
