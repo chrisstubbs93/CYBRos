@@ -69,16 +69,16 @@ void sendoldtelem() {
   //Brake input
   sprintf(buf, "%s,%d", buf, BrakePedalVal.get());
 
-  //fuseADC in adc counts
+  //NOT USED
   sprintf(buf, "%s,%d", buf, (SteeringFeedbackVal.get()*10)/2); //was pos
 
-  //throttleip (feedback)
+  //throttleip (fuse feedback)
   sprintf(buf, "%s,%d", buf, int(Input3Fuse));
 
   //throttleop (loop output)
   sprintf(buf, "%s,%d", buf, int(Output3Throttle));
 
-  //ShuntADC in adc counts
+  //ShuntADC in adc counts (converted to 0.1A???)
   sprintf(buf, "%s,%d", buf, (ShuntADC.get()*10)/6);
 
   //currentlimiting 0/1 1 is limiting (fuse current limiting)
