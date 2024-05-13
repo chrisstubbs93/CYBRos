@@ -3,13 +3,12 @@
     Handles serial comms.
 
     REPL commands: (not implemented yet)
-    q - quiet - mute all telemetry streaming
-    v - verbose - unmute all telemetry streaming
+    q - quiet - mute all non cmd serial messages 
     t - telemetry - toggle local telemetry
-    g - gateway - toggle gateway of hoverboard telemetry
-    l - list files - list datalog files on SD card
-    sn - send file - send contents of file n.txt
-    dy - delete all - delete all data, confirm with y, any other letter will cancel
+    ls - list files - list datalog files on SD card
+    s n - send file - send contents of file n.txt
+    del - delete all - delete all data
+    br n - set baud rate to n eg 115200, 1000000
 
 */
   char buf[128];
@@ -30,7 +29,7 @@ void sendError(char *msg) {
   sprintf(buf, "$ERROR,");
   sprintf(buf, "%s%s", buf, msg);
   sprintf(buf, "%s*%02X", buf, nmea0183_checksum(buf));
-  Serial.println(buf);
+  if(!quietSerial)Serial.println(buf);
   logSD(buf);
 }
 
@@ -38,7 +37,7 @@ void sendInfo(char *msg) {
   sprintf(buf, "$INFO,");
   sprintf(buf, "%s%s", buf, msg);
   sprintf(buf, "%s*%02X", buf, nmea0183_checksum(buf));
-  Serial.println(buf);
+  if(!quietSerial)Serial.println(buf);
   logSD(buf);
 }
 
@@ -94,7 +93,8 @@ void sendoldtelem() {
   //checksum
   sprintf(buf, "%s*%02X", buf, nmea0183_checksum(buf));
 
-  Serial.println(buf);
+  if(!quietSerial)Serial.println(buf);
+  logSD(buf);
 }
 
 void sendHovertelem(SerialFeedback &Feedback, int hbnum) {
@@ -127,7 +127,8 @@ void sendHovertelem(SerialFeedback &Feedback, int hbnum) {
   //checksum
   sprintf(buf, "%s*%02X", buf, nmea0183_checksum(buf));
 
-  Serial.println(buf);
+  if(!quietSerial)Serial.println(buf);
+  logSD(buf);
 }
 
 

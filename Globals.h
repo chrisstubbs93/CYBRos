@@ -10,6 +10,9 @@ double Input3Fuse, Output3Throttle;
 int brkcmd;
 int drvcmd;
 
+bool quietSerial = false;
+bool telemSerial = true;
+
 
 // Global variables for hoverboard
 int16_t currentDriveMode = TRQ_MODE;
