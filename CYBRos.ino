@@ -67,6 +67,7 @@ void setup() {
   Hoverboard[0].enabled = true;
   Hoverboard[1].enabled = true;
   Hoverboard[2].enabled = true;
+  //TODO disable fuse monitoring??
   sendInfo("Firmware CONFIG_VOLTCRANEO");
 #elif defined(CONFIG_CYBRTRK)
   Hoverboard[0].enabled = true;
@@ -88,13 +89,14 @@ void setup() {
   setupThrottleFuseControl();
   SDinit();
 
-  //init commands for cmdline - note MYST be CR terminated not LF / CRLF
+  //init commands for cmdline - note MUST be CR terminated not LF / CRLF
   cmd.add("ls", cmdLS);
   cmd.add("q", cmdQ);
   cmd.add("t", cmdT);
   cmd.add("s", cmdS);
   cmd.add("br", cmdBR);
   cmd.add("del", cmdDEL);
+  cmd.add("b", cmdB);
 }
 
 
@@ -105,7 +107,6 @@ void loop() {
   processAnalog();
   processDigital();
   //checkFootAndHandBrakeHeld();  //power up hoverboards if brakes held. Note blocking while held.
-  //buzzerTick();
   for (int i = 0; i <= 2; i++) {
     if (Hoverboard[i].enabled) Receive(*Hoverboard[i].port, Hoverboard[i].Feedback, Hoverboard[i].NewFeedback, Hoverboard[i].lastTimestamp);
   }
@@ -131,7 +132,7 @@ void loop() {
   }
 
   
-  //Tasks to run each watchdog tick:
+  //Tasks to run each HB watchdog tick:
   if (currentMillis - previousMillisC >= intervalC) {
     previousMillisC = currentMillis;
     if(Hoverboard[0].enabled) isHoverboardConnected(0); //putting these in the loop makes the buzzer library shit the bed and I wish I knew why.
@@ -179,5 +180,12 @@ void cmdBR(int argCnt, char **args)
 void cmdDEL(int argCnt, char **args)
 {
   deleteAll();
-  Serial.println("Reset arduino with [reset] to start datalogging again.");
+  Serial.println("Reset arduino to start datalogging again.");
+}
+
+void cmdB(int argCnt, char **args)
+{
+  disableBeep = !disableBeep;
+  Serial.print("disableBeep is ");
+  Serial.println(disableBeep);
 }

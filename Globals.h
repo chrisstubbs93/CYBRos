@@ -12,6 +12,7 @@ int drvcmd;
 
 bool quietSerial = false;
 bool telemSerial = true;
+bool disableBeep = false;
 
 
 // Global variables for hoverboard

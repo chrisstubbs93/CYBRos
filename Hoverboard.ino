@@ -19,6 +19,7 @@ void Send(int16_t uSteer, int16_t uSpeed, int16_t brake, int16_t driveMode)
     uSpeed1 = uSpeed;
     uSpeed2 = uSpeed;
   } else {
+    //Do not apply powersplit in speed mode because the axles will tug-of-war the chassis in half
     uSpeed0 = uSpeed;
     uSpeed1 = uSpeed;
     uSpeed2 = uSpeed;

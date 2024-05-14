@@ -106,9 +106,9 @@ float revspd = 0.5; //reverse throttle map multiplier
 int maxthrottleTRQ = 1200; //Max throttle command (in TRQ mode)
 int maxthrottleSPD = 1200; //Max throttle command (in SPD mode) //was 100
 
-int FHBpowerSplit = maxthrottleTRQ*0.50; //% max power of front HB in TRQ mode
-int RHB1powerSplit = maxthrottleTRQ*1.00; //% max power of rear1 HB in TRQ mode
-int RHB2powerSplit = RHB1powerSplit; //% max power of rear2 HB in TRQ mode
+int FHBpowerSplit = maxthrottleTRQ*0.50; //% max power of front HB in TRQ mode DISABLED
+int RHB1powerSplit = maxthrottleTRQ*1.00; //% max power of rear1 HB in TRQ mode DISABLED
+int RHB2powerSplit = RHB1powerSplit; //% max power of rear2 HB in TRQ mode DISABLED
 
 #define Brakehallthreshold 250
 int pedaldeadband = 50;

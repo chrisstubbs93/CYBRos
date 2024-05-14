@@ -3,7 +3,9 @@
     Handles initialisation of GPIO, scanning of buttons.
 */
 
-ezBuzzer buzzer(BuzzerPin); // create ezBuzzer object that attach to a pin;
+//ezBuzzer buzzer(BuzzerPin); // create ezBuzzer object that attach to a pin;
+unsigned long previousMillisBuzzer = 0;
+unsigned long currentMillisBuzzer;
 
 /*! Initialise the GPIO pins. */
 void initGPIO() {
@@ -103,20 +105,24 @@ void checkFootAndHandBrakeHeld(){
   }
 }
 
-void buzzerTick(){
-  buzzer.loop();
-  //Serial.print("Buzzer state: ");
-  //Serial.println(buzzer.getState());
-}
+void buzzerEvent(int tonePattern){
+  currentMillisBuzzer = millis();  //store time
+  //Tasks to run each buzzer tick:
+  if (currentMillisBuzzer - previousMillisBuzzer >= 1000) { //buzz at 1000ms interval
+    previousMillisBuzzer = currentMillisBuzzer;
+    int beepFreq, beepLen;
 
-void buzzerEvent(){
-  int melody[] = {NOTE_E5, NOTE_G5};
-  int noteDurations[] = {8, 4};
+    switch (tonePattern) {
+    case 1: //currentlimiting
+      beepFreq = 850;
+      beepLen = 1000;
+      break;
+    default: //error/undefined
+      beepFreq = 600;
+      beepLen = 250;
+      break;
+    }
+    if (!disableBeep){tone(BuzzerPin, beepFreq, beepLen);}
 
-  //if(buzzer.getState() == BUZZER_IDLE){
-    buzzer.playMelody(melody, noteDurations, sizeof(noteDurations) / sizeof(int)); // playing
-  //}
-  //else {
-  //  Serial.println("Waiting for buzzer");
-  //}
+  }
 }

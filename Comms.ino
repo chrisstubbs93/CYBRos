@@ -2,13 +2,14 @@
     \file Comms.ino
     Handles serial comms.
 
-    REPL commands: (not implemented yet)
+    Commands:
     q - quiet - mute all non cmd serial messages 
     t - telemetry - toggle local telemetry
     ls - list files - list datalog files on SD card
     s n - send file - send contents of file n.txt
     del - delete all - delete all data
     br n - set baud rate to n eg 115200, 1000000
+    b - toggle disable beep
 
 */
   char buf[128];
@@ -25,7 +26,7 @@ int nmea0183_checksum(char *nmea_data)
 }
 
 void sendError(char *msg) {
-  buzzerEvent();
+  buzzerEvent(0);
   sprintf(buf, "$ERROR,");
   sprintf(buf, "%s%s", buf, msg);
   sprintf(buf, "%s*%02X", buf, nmea0183_checksum(buf));

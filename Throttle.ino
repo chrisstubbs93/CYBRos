@@ -8,7 +8,7 @@ double Fuse_Pk = 0;  //I lim
 double Fuse_Ik = 5;
 double Fuse_Dk = 0;
 
-double FuseIlim = 850; //  in very nonlinear units about 0.1A //Determined experimentally by measuring runaway point as fuse blows
+double FuseIlim = 850; //  in very nonlinear units about 0.1A //Determined experimentally by measuring runaway point as fuse blows as 850
 PID FusePID(&Input3Fuse, &Output3Throttle, &FuseIlim, Fuse_Pk, Fuse_Ik , Fuse_Dk, DIRECT);
 
 
@@ -37,7 +37,7 @@ void throttlecontrol(){
         if (digitalRead(DriveSwPin)) {
           //Send(0, drvcmd, brkcmd, currentDriveMode); //non PID mode disabled
           //only do PID throttle/fuse control in forward drive when not braking for safety
-          Send(0, ThrottleFuseControl(drvcmd), brkcmd, currentDriveMode);
+          Send(0, ThrottleFuseControl(drvcmd), brkcmd, currentDriveMode); //TODO is this a good idea? Should we at least be feeding the PID loop at all times?
         } else if (digitalRead(RevSwPin)) {
           Send(0, -drvcmd * revspd, brkcmd, currentDriveMode);
         } else { //in neutral
@@ -70,8 +70,10 @@ int ThrottleFuseControl(int throttleSP) {
   //   Send(0, drvcmd, brkcmd, currentDriveMode); //stop if no pedal input
   // }
 
-  Input3Fuse = (SteeringFeedbackVal.get()*10)/2; //SteeringFeedbackVal = FuseADC (scaled to almost 0.1 amps nonlinear)
+  Input3Fuse = (FuseADC.get()*10)/2; //SteeringFeedbackVal = FuseADC (NOT TRUE ANYMORE) (scaled to almost 0.1 amps nonlinear) //THIS WAS WRONG *when it was steeringfeedback*
   FusePID.Compute();
+
+  //TODO tone when current limiting
   // Serial.print("PID fed with ");
   // Serial.println(Input3Fuse);
   // Serial.print("PID OP ");
@@ -92,6 +94,7 @@ int ThrottleFuseControl(int throttleSP) {
   else {
     //i lim mode
     fusecurrentLimiting = true;
+    buzzerEvent(1);
     return Output3Throttle;
   }
 }
