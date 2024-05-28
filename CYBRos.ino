@@ -106,6 +106,7 @@ void loop() {
   //Tasks to run every loop:
   processAnalog();
   processDigital();
+
   //checkFootAndHandBrakeHeld();  //power up hoverboards if brakes held. Note blocking while held.
   for (int i = 0; i <= 2; i++) {
     if (Hoverboard[i].enabled) Receive(*Hoverboard[i].port, Hoverboard[i].Feedback, Hoverboard[i].NewFeedback, Hoverboard[i].lastTimestamp);

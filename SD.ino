@@ -7,6 +7,7 @@ File myFile;
 char SDmsgbuf[128];
 File dataLogFile;
 char nextfile[20];
+char dumpfilename[20];
 
 int DeletedCount = 0;
 int FolderDeleteCount = 0;
@@ -136,7 +137,8 @@ int dumpLogFile(int fileno) {
 
   // open the file. note that only one file can be open at a time,
   // so you have to close this one before opening another.
-  File dataFile = SD.open("LOGS/2.TXT");
+  sprintf(dumpfilename, "LOGS/%i.TXT", fileno);
+  File dataFile = SD.open(dumpfilename);
 
   // if the file is available, write to it:
   if (dataFile) {
@@ -153,7 +155,8 @@ int dumpLogFile(int fileno) {
   }
   // if the file isn't open, pop up an error:
   else {
-    Serial.println("error opening datalog.txt");
+    Serial.println("error opening ");
+    Serial.println(dumpfilename);
   }
 
   dataLogFile = SD.open(nextfile, FILE_WRITE);//reopen old datalog file
