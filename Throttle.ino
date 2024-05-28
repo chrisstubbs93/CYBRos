@@ -59,6 +59,12 @@ void throttlecontrol(){
 
 
 int ThrottleFuseControl(int throttleSP) {
+
+  #if defined(CONFIG_VOLTCRANEO)
+    //bypass pid fuse control for crane because it's not fitted
+    return throttleSP;
+  #endif
+
   //remember to bypass this for braking! -ve throttle
   // if (AccelPedalVal.get() - PedalCentre > pedaldeadband) {
   //   //Accelerate
@@ -73,7 +79,6 @@ int ThrottleFuseControl(int throttleSP) {
   Input3Fuse = (FuseADC.get()*10)/2; //SteeringFeedbackVal = FuseADC (NOT TRUE ANYMORE) (scaled to almost 0.1 amps nonlinear) //THIS WAS WRONG *when it was steeringfeedback*
   FusePID.Compute();
 
-  //TODO tone when current limiting
   // Serial.print("PID fed with ");
   // Serial.println(Input3Fuse);
   // Serial.print("PID OP ");
@@ -82,7 +87,6 @@ int ThrottleFuseControl(int throttleSP) {
   //TODO datalog loop inputs, outputs, modes. Do tuning
   //TODO switch to feed fusemon or digital current feedback in to control loop
   //TODO implement torque split
-
 
 
   //take minimum loop output
