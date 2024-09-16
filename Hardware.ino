@@ -70,7 +70,7 @@ void processAnalog(){
 }
 
 void processDigital(){
-  if(digitalRead(TrqSpdSwPin) || digitalRead(ParkSwPin)){
+  if(digitalRead(TrqSpdSwPin)){
    currentDriveMode = SPD_MODE;
    maxthrottle = maxthrottleSPD;
   } else {
@@ -82,8 +82,16 @@ void processDigital(){
   digitalWrite(FLightPin, digitalRead(LightsSwPin));
 
   //Brake lights
-  digitalWrite(RLightPin, (analogRead(BrakeHallPin) > Brakehallthreshold || digitalRead(ParkSwPin) || BrakePedalVal.get() > BrakePedalStart));
-
+  //digitalWrite(RLightPin, (analogRead(BrakeHallPin) > Brakehallthreshold || BrakePedalVal.get() > BrakePedalStart));
+  if((analogRead(BrakeHallPin) > Brakehallthreshold || BrakePedalVal.get() > BrakePedalStart)){
+    //brakes on
+    analogWrite(RLightPin, 255); 
+  } else {
+    //brakes off, dim rear DRL
+    analogWrite(RLightPin, 50); 
+  }
+  
+  digitalWrite(RLightPin, (analogRead(BrakeHallPin) > Brakehallthreshold || BrakePedalVal.get() > BrakePedalStart));
 }
 
 void checkFootAndHandBrakeHeld(){

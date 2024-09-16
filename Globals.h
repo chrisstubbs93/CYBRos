@@ -6,7 +6,7 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-double Input3Fuse, Output3Throttle;
+double Input3Fuse, Output3Throttle, Input3FuseMaxHold;
 int brkcmd;
 int drvcmd;
 

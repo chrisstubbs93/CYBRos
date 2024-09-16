@@ -52,7 +52,13 @@ void setup() {
   initAnalog();
 
   //Serial.begin(115200);              //Serial to USB / Interface
-  cmd.begin(115200);
+  cmd.begin(9600); //init at lower speed for  bt modem
+  delay(1000);
+  Serial.print("AT+NAMECYBR");
+  delay(2000);
+  Serial.print("AT+BAUD8"); //115200 baud serial bt modem
+  delay(2000);
+  cmd.begin(115200); //switch to 115200
   Serial1.begin(HOVER_SERIAL_BAUD);  //Serial to front HB
   Serial2.begin(HOVER_SERIAL_BAUD);  //Serial to rear HB 1
   Serial3.begin(HOVER_SERIAL_BAUD);  //Serial to rear HB 2
@@ -90,13 +96,13 @@ void setup() {
   SDinit();
 
   //init commands for cmdline - note MUST be CR terminated not LF / CRLF
-  cmd.add("ls", cmdLS);
-  cmd.add("q", cmdQ);
-  cmd.add("t", cmdT);
-  cmd.add("s", cmdS);
-  cmd.add("br", cmdBR);
-  cmd.add("del", cmdDEL);
-  cmd.add("b", cmdB);
+  cmd.add("ls", cmdLS); //List SD contents
+  cmd.add("q", cmdQ); //toggle quietserial
+  cmd.add("t", cmdT); //toggle telem over serial
+  cmd.add("s", cmdS); //Send log file x
+  cmd.add("br", cmdBR); //Switch baud rate to x
+  cmd.add("del", cmdDEL); //Delete all files on SD
+  cmd.add("b", cmdB); //toggle beep
 }
 
 

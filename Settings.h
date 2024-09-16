@@ -114,11 +114,11 @@ int RHB2powerSplit = RHB1powerSplit; //% max power of rear2 HB in TRQ mode DISAB
 int pedaldeadband = 50;
 #define AccelPedalStart 200
 #define AccelPedalEnd 875
-#define BrakePedalStart 250
+#define BrakePedalStart 350 //was 250. Crane sometimes flashed brake lights.
 #define BrakePedalEnd 875
 
-#define CONFIG_VOLTCRANEO //Uncomment only one config
-//#define CONFIG_CYBRTRK //Uncomment only one config
+//#define CONFIG_VOLTCRANEO //Uncomment only one config
+#define CONFIG_CYBRTRK //Uncomment only one config
 
 int SteerCentreOffset = 0; //offset from steering straight in ADC counts
 
