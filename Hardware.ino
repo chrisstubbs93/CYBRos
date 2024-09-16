@@ -6,6 +6,7 @@
 //ezBuzzer buzzer(BuzzerPin); // create ezBuzzer object that attach to a pin;
 unsigned long previousMillisBuzzer = 0;
 unsigned long currentMillisBuzzer;
+unsigned int BrakeFlasher;
 
 /*! Initialise the GPIO pins. */
 void initGPIO() {
@@ -85,13 +86,19 @@ void processDigital(){
   //digitalWrite(RLightPin, (analogRead(BrakeHallPin) > Brakehallthreshold || BrakePedalVal.get() > BrakePedalStart));
   if((analogRead(BrakeHallPin) > Brakehallthreshold || BrakePedalVal.get() > BrakePedalStart)){
     //brakes on
-    analogWrite(RLightPin, 255); 
+    if(BrakeFlasher < 175){
+      analogWrite(RLightPin, 255); 
+    } else if (BrakeFlasher < 225) {
+      analogWrite(RLightPin, 15);//flash brake
+    } else {
+      BrakeFlasher = 0;
+    }
+    BrakeFlasher++;
+    
   } else {
     //brakes off, dim rear DRL
-    analogWrite(RLightPin, 50); 
+    analogWrite(RLightPin, 15); 
   }
-  
-  digitalWrite(RLightPin, (analogRead(BrakeHallPin) > Brakehallthreshold || BrakePedalVal.get() > BrakePedalStart));
 }
 
 void checkFootAndHandBrakeHeld(){//Is this now old??
