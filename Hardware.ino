@@ -94,7 +94,7 @@ void processDigital(){
   digitalWrite(RLightPin, (analogRead(BrakeHallPin) > Brakehallthreshold || BrakePedalVal.get() > BrakePedalStart));
 }
 
-void checkFootAndHandBrakeHeld(){
+void checkFootAndHandBrakeHeld(){//Is this now old??
     //manual power up routine for hoverboards
   if (!digitalRead(DriveSwPin) && !digitalRead(RevSwPin)) {
     //in neutral

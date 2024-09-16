@@ -101,7 +101,7 @@
 
 //======================Settings=======================
 int PedalCentre = 550;//old
-float revspd = 0.5; //reverse throttle map multiplier
+float revspd = 0.8; //reverse throttle map multiplier
 
 int maxthrottleTRQ = 1200; //Max throttle command (in TRQ mode)
 int maxthrottleSPD = 1200; //Max throttle command (in SPD mode) //was 100
