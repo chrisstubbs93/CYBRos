@@ -63,10 +63,10 @@ int ThrottleFuseControl(int throttleSP) {
   //Quick disable:
   //return throttleSP;
 
-  //#if defined(CONFIG_VOLTCRANEO)
+  #if defined(CONFIG_VOLTCRANEO)
     //bypass pid fuse control for crane because it's not fitted
-    //return throttleSP;
-  //#endif
+    return throttleSP;
+  #endif
 
   //remember to bypass this for braking! -ve throttle
   // if (AccelPedalVal.get() - PedalCentre > pedaldeadband) {
