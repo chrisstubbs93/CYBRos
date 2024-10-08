@@ -7,6 +7,7 @@
 #define GLOBALS_H
 
 double Input3Fuse, Output3Throttle, Input3FuseMaxHold;
+double throttleSpMonitor;
 int brkcmd;
 int drvcmd;
 

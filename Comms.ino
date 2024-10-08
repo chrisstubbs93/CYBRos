@@ -71,7 +71,7 @@ void sendoldtelem() {
   sprintf(buf, "%s,%d", buf, BrakePedalVal.get());
 
   //NOT USED
-  sprintf(buf, "%s,%d", buf, int(Input3FuseMaxHold)); //debug
+  sprintf(buf, "%s,%d", buf, int(throttleSpMonitor)); //debug
 
   //throttleip (fuse feedback)
   sprintf(buf, "%s,%d", buf, int(Input3Fuse));

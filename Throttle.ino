@@ -31,7 +31,7 @@ void throttlecontrol(){
     } else {                                      //brake is not on
       manualBraking = false;
       if (AccelPedalVal.get() > AccelPedalStart) {
-        drvcmd = map(AccelPedalVal.get(), AccelPedalStart, AccelPedalEnd, 0, maxthrottle);
+        drvcmd = constrain(map(AccelPedalVal.get(), AccelPedalStart, AccelPedalEnd, 0, maxthrottle),0,1200);
         brkcmd = 0;
         //hoverboard firmware input range is -1000 to 1000 (or 1200 lol)
         if (digitalRead(DriveSwPin)) {
@@ -63,10 +63,10 @@ int ThrottleFuseControl(int throttleSP) {
   //Quick disable:
   //return throttleSP;
 
-  #if defined(CONFIG_VOLTCRANEO)
-    //bypass pid fuse control for crane because it's not fitted
-    return throttleSP;
-  #endif
+  //#if defined(CONFIG_VOLTCRANEO)
+    //bypass pid fuse control for crane because it's not fitted - BUT NOW IT IS!
+  //  return throttleSP;
+  //#endif
 
   //remember to bypass this for braking! -ve throttle
   // if (AccelPedalVal.get() - PedalCentre > pedaldeadband) {
@@ -92,6 +92,7 @@ int ThrottleFuseControl(int throttleSP) {
   //TODO switch to feed fusemon or digital current feedback in to control loop
   //TODO implement torque split
 
+  throttleSpMonitor = throttleSP;
 
   //take minimum loop output
   if (abs(throttleSP) <= abs(Output3Throttle)) {

@@ -117,8 +117,8 @@ int pedaldeadband = 50;
 #define BrakePedalStart 350 //was 250. Crane sometimes flashed brake lights.
 #define BrakePedalEnd 875
 
-//#define CONFIG_VOLTCRANEO //Uncomment only one config
-#define CONFIG_CYBRTRK //Uncomment only one config
+#define CONFIG_VOLTCRANEO //Uncomment only one config
+//#define CONFIG_CYBRTRK //Uncomment only one config
 
 int SteerCentreOffset = 0; //offset from steering straight in ADC counts
 
