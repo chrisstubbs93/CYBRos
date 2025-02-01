@@ -102,6 +102,7 @@
 //======================Settings=======================
 int PedalCentre = 550;//old
 float revspd = 0.8; //reverse throttle map multiplier
+float DiffSteerCoeff = 1; //Diff steer weighting multiplier
 
 int maxthrottleTRQ = 1200; //Max throttle command (in TRQ mode)
 int maxthrottleSPD = 1200; //Max throttle command (in SPD mode) //was 100
@@ -117,9 +118,27 @@ int pedaldeadband = 50;
 #define BrakePedalStart 350 //was 250. Crane sometimes flashed brake lights.
 #define BrakePedalEnd 875
 
-#define CONFIG_VOLTCRANEO //Uncomment only one config
-//#define CONFIG_CYBRTRK //Uncomment only one config
+//#define CONFIG_VOLTCRANEO //Uncomment only one config
+#define CONFIG_CYBRTRK //Uncomment only one config
 
-int SteerCentreOffset = 0; //offset from steering straight in ADC counts
+#if defined(CONFIG_VOLTCRANEO) & defined(CONFIG_CYBRTRK)
+#error MULTIPLE HACKY CONFIGS SELECTED
+#elif defined(CONFIG_VOLTCRANEO)
+  #define SteerCentre 512
+  #define SteerLeft  256
+  #define SteerRight  512+256
+  //#define EnableDiffSteering
+#elif defined(CONFIG_CYBRTRK)
+  #define SteerCentre 494
+  #define SteerLeft  348
+  #define SteerRight  588
+  #define EnableDiffSteering
+#else
+#error HACKY CONFIG NOT SELECTED
+#endif
+
+
+
+
 
 #endif

@@ -10,6 +10,7 @@ double Input3Fuse, Output3Throttle, Input3FuseMaxHold;
 double throttleSpMonitor;
 int brkcmd;
 int drvcmd;
+int strcmd;
 
 bool quietSerial = false;
 bool telemSerial = true;
@@ -18,7 +19,8 @@ bool disableBeep = false;
 
 // Global variables for hoverboard
 int16_t currentDriveMode = TRQ_MODE;
-int maxthrottle = 1200;
+int maxthrottle = 1200; //this must be wrong?! it's 1000??
+int maxSteer = 1000;
 uint8_t idx = 0;                        // Index for new data pointer
 uint16_t bufStartFrame;                 // Buffer Start Frame
 byte *p;                                // Pointer declaration for the new received data

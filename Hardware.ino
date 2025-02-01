@@ -12,8 +12,8 @@ unsigned int BrakeFlasher;
 void initGPIO() {
   pinMode(BuzzerPin, OUTPUT);
 
-  pinMode(SteeringPot1Pin, INPUT);
-  pinMode(SteeringPot2Pin, INPUT);
+  pinMode(SteeringPot1Pin, INPUT); //pot representing steering angle
+  pinMode(SteeringPot2Pin, INPUT); //spare
 
   pinMode(FuseMonPin, INPUT);
   pinMode(ShuntMonPin, INPUT);
@@ -45,7 +45,6 @@ void initGPIO() {
 }
 
 void initAnalog() {
-  SteeringWheelVal.begin(SMOOTHED_AVERAGE, 10);
   SteeringFeedbackVal.begin(SMOOTHED_AVERAGE, 10);
   AccelPedalVal.begin(SMOOTHED_AVERAGE, 10);
   BrakePedalVal.begin(SMOOTHED_AVERAGE, 10);
@@ -61,8 +60,7 @@ void initAnalog() {
 
 void processAnalog(){
   //read all analogue in to smoothing function
-  SteeringWheelVal.add(analogRead(SteeringPot1Pin));
-  SteeringFeedbackVal.add(analogRead(SteeringPot2Pin));
+  SteeringFeedbackVal.add(analogRead(SteeringPot1Pin));
   AccelPedalVal.add(analogRead(RPedalPin));
   BrakePedalVal.add(analogRead(LPedalPin));
   ManualBrakeVal.add(analogRead(BrakeHallPin));

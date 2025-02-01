@@ -8,7 +8,16 @@
 //t o d o: detect motor vin
 //t o d o: lockout if values are out of safe range
 
+
 /**
+//from main:
+int pot;
+int sp;
+int pos = 0;  //mapped steeringwheelval avg
+int posraw = 0;
+int I_reading = 0;
+
+
 // PID for posn control
 double Pk1 = 7;  //speed it gets there
 double Ik1 = 0;

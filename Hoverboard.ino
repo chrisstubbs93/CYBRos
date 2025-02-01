@@ -8,7 +8,6 @@
 
 void Send(int16_t uSteer, int16_t uSpeed, int16_t brake, int16_t driveMode)
 {
-
   int16_t uSpeed0, uSpeed1, uSpeed2;
 
   if(currentDriveMode == TRQ_MODE){

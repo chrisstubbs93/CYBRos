@@ -19,7 +19,6 @@
 #include "Globals.h"
 
 
-Smoothed<int> SteeringWheelVal;
 Smoothed<int> SteeringFeedbackVal;  //now FuseADC not anymore!!
 Smoothed<int> AccelPedalVal;
 Smoothed<int> BrakePedalVal;
@@ -31,10 +30,6 @@ bool currentLimiting;
 bool fusecurrentLimiting;
 
 int pot;
-int sp;
-int pos = 0;  //mapped steeringwheelval avg
-int posraw = 0;
-int I_reading = 0;
 
 int pedalval = 0;
 
@@ -73,12 +68,12 @@ void setup() {
   Hoverboard[0].enabled = true;
   Hoverboard[1].enabled = true;
   Hoverboard[2].enabled = true;
-  //TODO disable fuse monitoring??
   sendInfo("Firmware CONFIG_VOLTCRANEO");
 #elif defined(CONFIG_CYBRTRK)
   Hoverboard[0].enabled = true;
   Hoverboard[1].enabled = true;
   Hoverboard[2].enabled = false;
+
   sendInfo("Firmware CONFIG_CYBRTRK");
 #else
 #error HACKY CONFIG NOT SELECTED
@@ -96,6 +91,8 @@ void setup() {
   SDinit();
 
   //init commands for cmdline - note MUST be CR terminated not LF / CRLF
+  cmd.add("?", cmdHELP); //help
+  cmd.add("help", cmdHELP); //help
   cmd.add("ls", cmdLS); //List SD contents
   cmd.add("q", cmdQ); //toggle quietserial
   cmd.add("t", cmdT); //toggle telem over serial
@@ -103,6 +100,8 @@ void setup() {
   cmd.add("br", cmdBR); //Switch baud rate to x
   cmd.add("del", cmdDEL); //Delete all files on SD
   cmd.add("b", cmdB); //toggle beep
+  cmd.add("dread", cmdDREAD); //print IO status for diagnostics
+  cmd.add("aread", cmdAREAD); //print IO status for diagnostics
 }
 
 
@@ -152,6 +151,23 @@ void loop() {
   // sendInfo(looptime);
 }
 
+void cmdHELP(int argCnt, char **args)
+{
+    Serial.println("CybrOS Help");
+    Serial.println("===========");
+    Serial.println("List of commands:");
+    Serial.println("?/help - This menu");
+    Serial.println("ls - List SD card contents");
+    Serial.println("q - Toggle quietserial (all messages)");
+    Serial.println("t - Toggle telemetry over serial");
+    Serial.println("s x - Send log file no. x");
+    Serial.println("br x - Switch baud rate to x");
+    Serial.println("del - Delete all files on SD card");
+    Serial.println("b - Toggle beep");
+    Serial.println("dread x - Print digital read for pin x");
+    Serial.println("aread x - Print analogue read for pin x");
+}
+
 void cmdLS(int argCnt, char **args)
 {
   File printroot = SD.open("/LOGS");
@@ -195,4 +211,20 @@ void cmdB(int argCnt, char **args)
   disableBeep = !disableBeep;
   Serial.print("disableBeep is ");
   Serial.println(disableBeep);
+}
+
+void cmdDREAD(int argCnt, char **args)
+{
+  Serial.print("Pin ");
+  Serial.print(atoi(args[1]));
+  Serial.print(" digitalRead: ");
+  Serial.println(digitalRead(atoi(args[1])));
+}
+
+void cmdAREAD(int argCnt, char **args)
+{
+  Serial.print("Pin ");
+  Serial.print(atoi(args[1]));
+  Serial.print(" analogRead: ");
+  Serial.println(analogRead(atoi(args[1])));
 }

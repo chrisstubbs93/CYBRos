@@ -37,7 +37,21 @@ void throttlecontrol(){
         if (digitalRead(DriveSwPin)) {
           //Send(0, drvcmd, brkcmd, currentDriveMode); //non PID mode disabled
           //only do PID throttle/fuse control in forward drive when not braking for safety
-          Send(0, ThrottleFuseControl(drvcmd), brkcmd, currentDriveMode); //TODO is this a good idea? Should we at least be feeding the PID loop at all times?
+
+          //calculate diff steering - only applied in drive
+          #if defined(EnableDiffSteering)
+            if (SteeringFeedbackVal.get() < SteerCentre){ //assume left
+              strcmd = map(SteeringFeedbackVal.get(), SteerLeft, SteerCentre, maxSteer, 0);  //assuming + steers left
+            } else { //assume right
+              strcmd = map(SteeringFeedbackVal.get(), SteerCentre, SteerRight, 0, -maxSteer);  //assuming - steers right
+            }
+          #else
+            strcmd = 0;
+          #endif
+          strcmd = constrain(strcmd,-maxSteer,maxSteer);
+          strcmd = strcmd*DiffSteerCoeff;
+
+          Send(strcmd, ThrottleFuseControl(drvcmd), brkcmd, currentDriveMode); //TODO is this a good idea? Should we at least be feeding the PID loop at all times?
         } else if (digitalRead(RevSwPin)) {
           Send(0, -drvcmd * revspd, brkcmd, currentDriveMode);
         } else { //in neutral
@@ -45,7 +59,7 @@ void throttlecontrol(){
           brkcmd = 0;
           Send(0, drvcmd, brkcmd, currentDriveMode);
         }
-      } else if (BrakePedalVal.get() > BrakePedalStart) {                      //brake //should probably chheck this first
+      } else if (BrakePedalVal.get() > BrakePedalStart) {                      //brake //should probably check this first
         brkcmd = map(BrakePedalVal.get(), BrakePedalStart, BrakePedalEnd, 0, 1000);  //500 = full brake
         drvcmd = 0;
         Send(0, drvcmd, brkcmd, currentDriveMode);
