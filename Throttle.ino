@@ -39,14 +39,15 @@ void throttlecontrol(){
           //only do PID throttle/fuse control in forward drive when not braking for safety
 
           //calculate diff steering - only applied in drive
+          strcmd = 0;
           #if defined(EnableDiffSteering)
-            if (SteeringFeedbackVal.get() < SteerCentre){ //assume left
-              strcmd = map(SteeringFeedbackVal.get(), SteerLeft, SteerCentre, maxSteer, 0);  //assuming + steers left
-            } else { //assume right
-              strcmd = map(SteeringFeedbackVal.get(), SteerCentre, SteerRight, 0, -maxSteer);  //assuming - steers right
+            if (digitalRead(ParkSwPin)){
+              if (SteeringFeedbackVal.get() < SteerCentre){ //assume left
+                strcmd = map(SteeringFeedbackVal.get(), SteerLeft, SteerCentre, maxSteer, 0);  //assuming + steers left
+              } else { //assume right
+                strcmd = map(SteeringFeedbackVal.get(), SteerCentre, SteerRight, 0, -maxSteer);  //assuming - steers right
+              }
             }
-          #else
-            strcmd = 0;
           #endif
           strcmd = constrain(strcmd,-maxSteer,maxSteer);
           strcmd = strcmd*DiffSteerCoeff;

@@ -82,7 +82,7 @@
 //Connector J6 - Gear Sw
 #define DriveSwPin 28 //J6-3
 #define RevSwPin 29 //J6-4
-#define ParkSwPin 30  //J6-5
+#define ParkSwPin 30  //J6-5 //NOW DIFF STEERING ENABLE
 #define TrqSpdSwPin 31 //J6-6 HIGH for SPD, LOW (open) for TRQ
 #define LightsSwPin 32 //J6-7
 
