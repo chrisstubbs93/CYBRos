@@ -8,7 +8,8 @@ double Fuse_Pk = 0;  //I lim
 double Fuse_Ik = 5;
 double Fuse_Dk = 0;
 
-double FuseIlim = 700; //  in very nonlinear units about 0.1A //Determined experimentally by measuring runaway point as fuse blows as 850. Lowered to 700 at footfest
+//scrumpyu increased from 550 to 625
+double FuseIlim = 700; //  650 stable at scrumpy 25, was 700 for cybr truk in very nonlinear units about 0.1A //Determined experimentally by measuring runaway point as fuse blows as 850. Lowered to 700 at footfest
 PID FusePID(&Input3Fuse, &Output3Throttle, &FuseIlim, Fuse_Pk, Fuse_Ik , Fuse_Dk, DIRECT);
 
 
