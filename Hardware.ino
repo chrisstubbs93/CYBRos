@@ -42,6 +42,13 @@ void initGPIO() {
   pinMode(ParkSwPin, INPUT); 
   pinMode(TrqSpdSwPin, INPUT);
   pinMode(LightsSwPin, INPUT);
+
+  pinMode(RCCH1Pin, INPUT);
+  pinMode(RCCH2Pin, INPUT);
+  pinMode(RCCH3Pin, INPUT);
+  pinMode(RCCH4Pin, INPUT);
+  pinMode(RCCH5Pin, INPUT);
+  pinMode(RCCH6Pin, INPUT);
 }
 
 void initAnalog() {
@@ -52,9 +59,15 @@ void initAnalog() {
   FuseADC.begin(SMOOTHED_AVERAGE, 10);
   ShuntADC.begin(SMOOTHED_AVERAGE, 10);
 
+  RCSteerPulse.begin(SMOOTHED_AVERAGE, 5);
+  RCThrottlePulse.begin(SMOOTHED_AVERAGE, 5);
+  RCAuxPulse.begin(SMOOTHED_AVERAGE, 5);
+
   //before doing anything, feed the analog smoothing with at least the smoothing factor n samples
   for (int i = 0; i < 10; i ++) {
     processAnalog();
+    processPulse();
+    delay(25);
   }
 }
 
@@ -97,6 +110,14 @@ void processDigital(){
     //brakes off, dim rear DRL
     analogWrite(RLightPin, 15); 
   }
+
+}
+
+void processPulse(){
+  // Read RC inputs (timeout prevents lockup if signal missing)
+  RCSteerPulse.add(pulseIn(RCCH1Pin, HIGH, 25000));  // Steer
+  RCThrottlePulse.add(pulseIn(RCCH2Pin, HIGH, 25000));  // Throttle
+  RCAuxPulse.add(pulseIn(RCCH3Pin, HIGH, 25000));  // Aux
 }
 
 void checkFootAndHandBrakeHeld(){//Is this now old??

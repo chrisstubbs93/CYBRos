@@ -6,28 +6,6 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-/**
-//======================Definitions for hardware OLD=======================
-#define SteeringWheelPin A0 //smoothed
-#define SteeringFeedbackPin A1 //smoothed //Now FuseADC
-#define LeftPedalPin A2 //smoothed
-#define RightPedalPin A3 //not required
-#define DividerPin A4
-#define CurrentSensePin A5 //probably needs smoothing
-#define BrakeHallPin A6 //probably needs smoothing
-
-#define LocRemSwPin 5
-#define DriveSwPin 6
-#define RevSwPin 7
-#define EstopPin 8
-#define MotorEnPin 11
-#define LPWMpin 10
-#define RPWMpin 9
-#define AUX1pin 3 //FET 12V OP only //front HB power control
-#define AUX2pin 2 //FET 12V OP only //Rear HB power control
-#define AUX3pin 4 //input only with 10k pulldown //used for soft serial
-*/
-
 //======================Definitions for hardware NEW=======================
 #define BuzzerPin 13 //clicks on serial connection, could swap for D45, OUTPUT
 
@@ -86,7 +64,15 @@
 #define TrqSpdSwPin 31 //J6-6 HIGH for SPD, LOW (open) for TRQ
 #define LightsSwPin 32 //J6-7
 
-//Other interfaces (J7/17/18 H Bridge channels, J21 GenDIO, J10 RCinputs) are not yet defined/implemented
+//Connector J10 - RC
+#define RCCH1Pin 2 //J10-3 Steer
+#define RCCH2Pin 3 //J10-4 Throttle
+#define RCCH3Pin 46  //J10-5 Aux
+#define RCCH4Pin 47 //J10-6
+#define RCCH5Pin 48 //J10-7
+#define RCCH6Pin 49 //J10-8
+
+//Other interfaces (J7/17/18 H Bridge channels, J21 GenDIO) are not yet defined/implemented
 
 
 
@@ -95,9 +81,9 @@
 #define START_FRAME         0xABCD       // [-] Start frme definition for reliable serial communication
 #define SPD_MODE            2            // [-] SPEED mode
 #define TRQ_MODE            3            // [-] TORQUE mode
-#define HB_TIMEOUT          1000          // in ms for warning
-#define HB_TIMEOUT_START    3000          // in ms to triger restart
-#define HB_RESTART_WAIT     10000          // in ms before retrying restart
+#define HB_TIMEOUT          950          // in ms for warning 
+#define HB_TIMEOUT_START    1450          // in ms to triger restart // battery startup takes 7.48s. Hotstart from USB takes 4.8s
+#define HB_RESTART_WAIT     5000          // in ms before retrying restart //hb takes about 2.5 seconds to restart and clear comms
 
 //======================Settings=======================
 int PedalCentre = 550;//old
@@ -110,6 +96,15 @@ int maxthrottleSPD = 1200; //Max throttle command (in SPD mode) //was 100
 int FHBpowerSplit = maxthrottleTRQ*0.50; //% max power of front HB in TRQ mode DISABLED
 int RHB1powerSplit = maxthrottleTRQ*1.00; //% max power of rear1 HB in TRQ mode DISABLED
 int RHB2powerSplit = RHB1powerSplit; //% max power of rear2 HB in TRQ mode DISABLED
+
+#define RCMaxSpeed 25
+#define RCSteerL 895
+#define RCSteerMid 1425
+#define RCSteerR 1950
+#define RCThrottleF 1650
+#define RCThrottleMid 1435
+#define RCThrottleR 895
+#define RCAuxMid 1450 //> = on
 
 #define Brakehallthreshold 250
 int pedaldeadband = 50;

@@ -58,7 +58,13 @@ void sendoldtelem() {
   } else if (digitalRead(RevSwPin)) {
     sprintf(buf, "%s,R", buf);
   } else {
+    if (RCAuxPulse.get() > RCAuxMid) {
+    //N and RC mode
+    sprintf(buf, "%s,C", buf);
+    } else {
+    //N without RC mode
     sprintf(buf, "%s,N", buf);
+    }
   }
 
   //manualbrake 0/1 (1 is braking)

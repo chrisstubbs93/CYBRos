@@ -91,6 +91,7 @@ void Receive(Stream &port, SerialFeedback &Feedback, SerialFeedback &NewFeedback
 }
 
 bool isHoverboardConnected(int hb){
+
   if (millis() - Hoverboard[hb].lastTimestamp > HB_TIMEOUT){
     char disconnectWarn[128];
     sprintf(disconnectWarn, "Hoverboard %i disconnected for %lu", hb, (millis() - Hoverboard[hb].lastTimestamp));
@@ -103,19 +104,19 @@ bool isHoverboardConnected(int hb){
         sendError(restartWarn);
         if(hb == 0) {
           digitalWrite(FHBPwrCommandPin, HIGH);
-          delay(200);
+          delay(100);
           digitalWrite(FHBPwrCommandPin, LOW);
           Hoverboard[hb].restartTimestamp = millis();
         }
         if(hb == 1) {
           digitalWrite(RHB1PwrCommandPin, HIGH);
-          delay(200);
+          delay(100);
           digitalWrite(RHB1PwrCommandPin, LOW);
           Hoverboard[hb].restartTimestamp = millis();
         }
         if(hb == 2) {
           digitalWrite(RHB2PwrCommandPin, HIGH);
-          delay(200);
+          delay(100);
           digitalWrite(RHB2PwrCommandPin, LOW);
           Hoverboard[hb].restartTimestamp = millis();
         }

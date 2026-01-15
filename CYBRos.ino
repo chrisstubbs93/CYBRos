@@ -19,12 +19,15 @@
 #include "Globals.h"
 
 
-Smoothed<int> SteeringFeedbackVal;  //now FuseADC not anymore!!
+Smoothed<int> SteeringFeedbackVal;
 Smoothed<int> AccelPedalVal;
 Smoothed<int> BrakePedalVal;
 Smoothed<int> ManualBrakeVal;
 Smoothed<int> FuseADC;
 Smoothed<int> ShuntADC;
+Smoothed<int> RCSteerPulse;
+Smoothed<int> RCThrottlePulse;
+Smoothed<int> RCAuxPulse;
 bool manualBraking;
 bool currentLimiting;
 bool fusecurrentLimiting;
@@ -33,9 +36,9 @@ int pot;
 
 int pedalval = 0;
 
-long intervalA = 50;  // time constant for PID loop tick
+long intervalA = 50;  // time constant for PID loop tick //Pulses must be processed slower than they come in (tick > 20ms)
 long intervalB = 250;  // time constant for datalog loop tick
-long intervalC = 500;  // time constant for watchdog loop tick
+long intervalC = 250;  // time constant for watchdog loop tick
 
 
 unsigned long previousMillisA = 0;
@@ -48,11 +51,11 @@ void setup() {
 
   //Serial.begin(115200);              //Serial to USB / Interface
   cmd.begin(9600); //init at lower speed for  bt modem
-  delay(1000);
+  delay(200);
   Serial.print("AT+NAMECYBR");
-  delay(2000);
+  delay(200);
   Serial.print("AT+BAUD8"); //115200 baud serial bt modem
-  delay(2000);
+  delay(500);
   cmd.begin(115200); //switch to 115200
   Serial1.begin(HOVER_SERIAL_BAUD);  //Serial to front HB
   Serial2.begin(HOVER_SERIAL_BAUD);  //Serial to rear HB 1
@@ -123,6 +126,7 @@ void loop() {
   if (currentMillis - previousMillisA >= intervalA) {
     previousMillisA = currentMillis;
     throttlecontrol();
+    processPulse(); //Pulses must be processed slower than they come in (tick > 20ms)
   }
 
 
@@ -145,9 +149,9 @@ void loop() {
     if(Hoverboard[1].enabled) isHoverboardConnected(1);
     if(Hoverboard[2].enabled) isHoverboardConnected(2);
   }
-
+  // delay(20);   // RC inputs do not work without 20ms delay
   // char looptime[128];
-  // sprintf(looptime, "Loop time: %i", (millis()-currentMillisA));
+  // sprintf(looptime, "Loop time: %i", (millis()-currentMillis));
   // sendInfo(looptime);
 }
 
