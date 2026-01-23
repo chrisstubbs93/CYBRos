@@ -16,6 +16,8 @@ bool quietSerial = false;
 bool telemSerial = true;
 bool disableBeep = false;
 
+bool RCModeActive = false;
+
 
 // Global variables for hoverboard
 int16_t currentDriveMode = TRQ_MODE;

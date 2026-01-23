@@ -9,8 +9,8 @@
 //======================Definitions for hardware NEW=======================
 #define BuzzerPin 13 //clicks on serial connection, could swap for D45, OUTPUT
 
-#define SteeringPot1Pin A5 //J8 - Steering wheel SP
-#define SteeringPot2Pin A6 //J9 - Feedback
+#define SteeringPot1Pin A5 //J8 - Pot representing steering mech angle
+#define SteeringPot2Pin A6 //J9 - Spare, could be a direct steering motor encoder
 
 //J14 - Fuse Mon
 #define FuseMonPin A7 //J14-3
@@ -71,6 +71,14 @@
 #define RCCH4Pin 47 //J10-6
 #define RCCH5Pin 48 //J10-7
 #define RCCH6Pin 49 //J10-8
+
+//Connector J7 - Steering Drive
+#define SteerLPWMPin 7 //J10-3 LPWM
+#define SteerRPWMPin 6 //J10-4 RPWM
+#define SteerRENPin 22 //J10-5 R_EN
+#define SteerLENPin 23 //J10-6 L_EN //not used
+#define SteerRISPin A3 //J10-7 R_IS (current sense)
+#define SteerLISPin A4 //J10-8 L_IS (current sense) //not used
 
 //Other interfaces (J7/17/18 H Bridge channels, J21 GenDIO) are not yet defined/implemented
 

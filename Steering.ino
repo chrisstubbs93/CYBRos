@@ -6,118 +6,116 @@
 //input: -100% to 100% of steering range over serial
 //t o d o: detect failure to control
 //t o d o: detect motor vin
-//t o d o: lockout if values are out of safe range
+//t o d o: Steer_lockout if values are out of safe range
 
 
-/**
+
 //from main:
+/*
 int pot;
 int sp;
 int pos = 0;  //mapped steeringwheelval avg
 int posraw = 0;
-int I_reading = 0;
+*/
 
+
+#define Steer_lockout_time 10 // time in constant current before tripping to Steer_lockout mode
+#define poslimit 100 //150 is somewhat arbritrary number that represents 90 degrees each way
+#define Steer_izerooffset 350        //adc counts at 0 amps
+#define Steer_ical 30                //adc counts per 1amp
+double Steer_ilim = 80;                 //in 0.1A
+
+int Steer_CC_iterations = 0;  //number of iterations in constant current mode
+double Steer_pwm;
+bool Steer_lockout = false;
 
 // PID for posn control
-double Pk1 = 7;  //speed it gets there
-double Ik1 = 0;
-double Dk1 = 0;
-double Setpoint1, Input1, Output1;
-PID PID1(&Input1, &Output1, &Setpoint1, Pk1, Ik1 , Dk1, DIRECT);
+double Steer_Posn_Pk = 1.5;  //speed it gets there
+double Steer_Posn_Ik = 0;
+double Steer_Posn_Dk = 0.1;
+double Steer_Posn_Sp, Steer_Posn_Ip, Steer_Posn_Op;
+PID Steer_Posn_PID(&Steer_Posn_Ip, &Steer_Posn_Op, &Steer_Posn_Sp, Steer_Posn_Pk, Steer_Posn_Ik , Steer_Posn_Dk, DIRECT);
 
 // PID steering current limit
-double Pk2 = 0;  //I lim
-double Ik2 = 15;
-double Dk2 = 0;
-double Input2, Output2;
-PID PID2(&Input2, &Output2, &ilim, Pk2, Ik2 , Dk2, DIRECT);
-
-int lockout_time = 10; // time in constant current before tripping to lockout mode
-bool lockout = false;
-int poslimit = 100; //150 is somewhat arbritrary number that represents 90 degrees each way
-double pwm;
-float izerooffset = 350.0;        //adc counts at 0 amps
-float ical = 30.0;                //adc counts per 1amp
-double ilim = 80;                 //in 0.1A
-unsigned long CC_iterations = 0;  //number of iterations in constant current mode
+double Steer_Curr_Pk = 0;  //I lim
+double Steer_Curr_Ik = 15;
+double Steer_Curr_Dk = 0;
+double Steer_Curr_Ip, Steer_Curr_Op;
+PID Steer_Curr_PID(&Steer_Curr_Ip, &Steer_Curr_Op, &Steer_ilim, Steer_Curr_Pk, Steer_Curr_Ik , Steer_Curr_Dk, DIRECT);
 
 
-void setupSteeringControlPID(){
-  PID1.SetMode(AUTOMATIC);              // PID posn control loop
-  PID1.SetOutputLimits(-255, 255);
-  PID1.SetSampleTime(20);
+void setupSteeringControl(){
+  Steer_Posn_PID.SetMode(AUTOMATIC);              // PID posn control loop
+  Steer_Posn_PID.SetOutputLimits(-255, 255);
+  Steer_Posn_PID.SetSampleTime(20);
 
-  PID2.SetMode(AUTOMATIC);              // PID constant current loop
-  PID2.SetOutputLimits(-255, 255);
-  PID2.SetSampleTime(20);
-  digitalWrite(MotorEnPin, HIGH);
+  Steer_Curr_PID.SetMode(AUTOMATIC);              // PID constant current loop
+  Steer_Curr_PID.SetOutputLimits(-255, 255);
+  Steer_Curr_PID.SetSampleTime(20);
+
 }
 
-void wiperServo(int sp) { //disabled
-  Setpoint1 = constrain(map(sp, -100, 100, 0 - poslimit, poslimit), 0 - poslimit, poslimit);
-  pot = SteeringFeedbackVal.get();//analogRead(SteeringFeedbackPin) + SteerCentreOffset;
-  //Serial.print(" pos_sp:");
-  //Serial.print (Setpoint1);
-  //Serial.print(" pos_ip:");
-  Input1 = map(pot, 0, 1023, -255, 255);
-  //Serial.print (Input1);
-  PID1.Compute();
-  //Serial.print(" pos_op:");
-  //Serial.print(Output1);
-  I_reading = analogRead(CurrentSensePin);
-  //Serial.print(" I_raw:");
-  //Serial.print(I_reading);
-  //Input2 = (I_reading - izerooffset) * 10 / ical; //current feedback in 0.1A //disabled to do fuse monitoring
-  Input2 = I_reading;
-  //Serial.print(" I_ip:");
-  //Serial.print(Input2);
-  PID2.Compute();
-  //Serial.print(" I_op:");
-  //Serial.print(Output2);
+void SteeringControl() { 
 
-  //  if (digitalRead(DriveSwPin)) {
-  //    Serial.print(" Gear:D ");
-  //  } else if (digitalRead(RevSwPin)) {
-  //    Serial.print(" Gear:R ");
-  //  } else {
-  //    Serial.print(" Gear:N ");
-  //  }
+  if (RCModeActive){
+    digitalWrite(SteerLENPin, HIGH); 
+    digitalWrite(SteerRENPin, HIGH); 
+  } else {
+    digitalWrite(SteerLENPin, LOW); 
+    digitalWrite(SteerRENPin, LOW); 
+  }
+
+  //Steer_Posn_Sp = constrain(map(Steer_Posn_Sp, -100, 100, -poslimit, poslimit), -poslimit, poslimit);
+  if (RCSteerPulse.get() < RCSteerMid) {                                     //assume left
+    Steer_Posn_Sp = map(RCSteerPulse.get(), RCSteerL, RCSteerMid, SteerLeft, SteerCentre);    //assuming + steers left
+  } else {                                                                           //assume right
+    Steer_Posn_Sp = map(RCSteerPulse.get(), RCSteerMid, RCSteerR, SteerCentre, SteerRight);  //assuming - steers right
+  }
+  Steer_Posn_Sp = constrain(Steer_Posn_Sp, SteerLeft, SteerRight);
+
+  //pot = SteeringFeedbackVal.get();//analogRead(SteeringFeedbackPin) + SteerCentreOffset;
+  Steer_Posn_Ip = SteeringFeedbackVal.get();
+  //Serial.println(Steer_Posn_Ip);
+  Steer_Posn_PID.Compute();
+
+  Steer_Curr_Ip = (SteerCurr.get() - Steer_izerooffset) * 10 / Steer_ical; //current feedback in 0.1A //used to be disabled so check this
+  Steer_Curr_PID.Compute();
 
   //take minimum loop output
-  if (abs(Output1) <= abs(Output2)) {
+  if (abs(Steer_Posn_Op) <= abs(Steer_Curr_Op)) {
     //position mode
-    currentLimiting = false;
-    pwm = Output1;
+    steercurrentLimiting = false;
+    Steer_pwm = Steer_Posn_Op;
     //Serial.print(" Mode:Pos");
-    CC_iterations = 0;
+    Steer_CC_iterations = 0;
   }
   else {
     //i lim mode
-    currentLimiting = false;
-    pwm = Output2;
-    if (Output1 < 0) {
-      pwm = Output2 * -1; //current loop is unidirectional so flip it for constant negative current output (CC reverse)
+    steercurrentLimiting = false;
+    Steer_pwm = Steer_Curr_Op;
+    if (Steer_Posn_Op < 0) {
+      Steer_pwm = Steer_Curr_Op * -1; //current loop is unidirectional so flip it for constant negative current output (CC reverse)
     }
     //Serial.println(" Mode:CC");
-    CC_iterations++;
-    //Serial.println(CC_iterations);
+    Steer_CC_iterations++;
+    //Serial.println(Steer_CC_iterations);
   }
 
-  if (CC_iterations > (1000 * lockout_time) / interval) {
-    lockout = false; //latch into lockout mode
+  if (Steer_CC_iterations > (1000 * Steer_lockout_time) / intervalA) {
+    Steer_lockout = false; //latch into Steer_lockout mode
   }
-  if (lockout) {
-    pwm = 0;
-    digitalWrite(EstopPin, HIGH);
-    //Serial.println("LOCKOUT");
+  if (Steer_lockout) {
+    Steer_pwm = 0;
+    digitalWrite(SteerRENPin, LOW); //how do we handle turning this off?
+    digitalWrite(SteerRENPin, LOW); //how do we handle turning this off?
   }
 
-  if (pwm > 0) {
-    analogWrite(RPWMpin, pwm);
-    analogWrite(LPWMpin, 0);
+  if (Steer_pwm > 0) {
+    analogWrite(SteerRPWMPin, Steer_pwm);
+    analogWrite(SteerLPWMPin, 0);
   } else {
-    analogWrite(RPWMpin, 0);
-    analogWrite(LPWMpin, abs(pwm));
+    analogWrite(SteerRPWMPin, 0);
+    analogWrite(SteerLPWMPin, abs(Steer_pwm));
   }
 }
 
@@ -125,4 +123,47 @@ void wiperServo(int sp) { //disabled
 //remote  pos = constrain(posraw, -100, 100);
 ////wiperServo(pos);              // tell servo to go to position in variable 'pos'
 
-*/
+
+  //Serial.print(" pos_sp:");
+  //Serial.print (Steer_Posn_Sp);
+  //Serial.print(" pos_ip:");
+  //Serial.print (Steer_Posn_Ip);
+  //Serial.print(" pos_op:");
+  //Serial.print(Steer_Posn_Op);
+  //Serial.print(" I_raw:");
+  //Serial.print(I_reading);
+  //Serial.print(" I_ip:");
+  //Serial.print(Steer_Curr_Ip);
+  //Serial.print(" I_op:");
+  //Serial.print(Steer_Curr_Op);
+// print Steering control mode pos/ilim
+//lockout status Steer_lockout
+
+ char steerbuf[128];
+ char floatStrBuf[20];
+void sendSteeringtelem() {
+  sprintf(steerbuf, "$STEER");
+
+  sprintf(steerbuf, "%s,%d", steerbuf, RCModeActive);
+
+  sprintf(steerbuf, "%s,%s", steerbuf, (dtostrf(Steer_Posn_Ip, 1, 0, floatStrBuf), floatStrBuf));
+  sprintf(steerbuf, "%s,%s", steerbuf, (dtostrf(Steer_Posn_Op, 1, 0, floatStrBuf), floatStrBuf));
+  sprintf(steerbuf, "%s,%s", steerbuf, (dtostrf(Steer_Posn_Sp, 1, 0, floatStrBuf), floatStrBuf));
+
+  sprintf(steerbuf, "%s,%s", steerbuf, (dtostrf(Steer_Curr_Ip, 1, 0, floatStrBuf), floatStrBuf));
+  sprintf(steerbuf, "%s,%s", steerbuf, (dtostrf(Steer_Curr_Op, 1, 0, floatStrBuf), floatStrBuf));
+  sprintf(steerbuf, "%s,%s", steerbuf, (dtostrf(Steer_ilim,    1, 0, floatStrBuf), floatStrBuf));
+
+  sprintf(steerbuf, "%s,%d", steerbuf, steercurrentLimiting);
+  sprintf(steerbuf, "%s,%d", steerbuf, Steer_lockout);
+  
+
+  //checksum
+  sprintf(steerbuf, "%s*%02X", steerbuf, nmea0183_checksum(steerbuf));
+
+  //if(!quietSerial)Serial.println(buf);
+  Serial.println(steerbuf);
+  logSD(steerbuf);
+}
+
+

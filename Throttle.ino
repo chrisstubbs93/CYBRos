@@ -45,7 +45,7 @@ void throttlecontrol() {
         //calculate diff steering - only applied in drive
         strcmd = 0;
         #if defined(EnableDiffSteering)
-          if (digitalRead(ParkSwPin)) {
+          if (digitalRead(ParkSwPin)) {//reused as diff switch
             if (SteeringFeedbackVal.get() < SteerCentre) {                                     //assume left
               strcmd = map(SteeringFeedbackVal.get(), SteerLeft, SteerCentre, maxSteer, 0);    //assuming + steers left
             } else {                                                                           //assume right
@@ -62,16 +62,19 @@ void throttlecontrol() {
         Send(0, -drvcmd * revspd, brkcmd, currentDriveMode);
       } else {                        //in neutral (also RC mode)
         if (RCAuxPulse.get() > RCAuxMid) {  //RC Aux Switch turned ON to activate remote mode
+        RCModeActive = true;
           if (RCThrottlePulse.get() > RCThrottleMid) {  //fwd
             drvcmd = constrain(map(RCThrottlePulse.get(), RCThrottleMid, RCThrottleF, 0, RCMaxSpeed), 0, RCMaxSpeed);
           } else {  //rev
             drvcmd = constrain(map(RCThrottlePulse.get(), RCThrottleMid, RCThrottleR, 0, -RCMaxSpeed), -RCMaxSpeed * revspd, 0);
           }
-          strcmd = constrain(map(RCSteerPulse.get(), RCSteerR, RCSteerL, -RCMaxSpeed, RCMaxSpeed), -RCMaxSpeed, RCMaxSpeed);
+          //strcmd = constrain(map(RCSteerPulse.get(), RCSteerR, RCSteerL, -RCMaxSpeed, RCMaxSpeed), -RCMaxSpeed, RCMaxSpeed);
+          strcmd = 0;
           Send(strcmd, drvcmd, 0, SPD_MODE);
         }
         else {
           //in N with no RC input
+          RCModeActive = false;
           Send(0, 0, 0, currentDriveMode);
         }
       }

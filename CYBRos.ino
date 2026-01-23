@@ -25,11 +25,12 @@ Smoothed<int> BrakePedalVal;
 Smoothed<int> ManualBrakeVal;
 Smoothed<int> FuseADC;
 Smoothed<int> ShuntADC;
+Smoothed<int> SteerCurr;
 Smoothed<int> RCSteerPulse;
 Smoothed<int> RCThrottlePulse;
 Smoothed<int> RCAuxPulse;
 bool manualBraking;
-bool currentLimiting;
+bool steercurrentLimiting;
 bool fusecurrentLimiting;
 
 int pot;
@@ -91,6 +92,7 @@ void setup() {
   }
 
   setupThrottleFuseControl();
+  setupSteeringControl();
   SDinit();
 
   //init commands for cmdline - note MUST be CR terminated not LF / CRLF
@@ -126,6 +128,7 @@ void loop() {
   if (currentMillis - previousMillisA >= intervalA) {
     previousMillisA = currentMillis;
     throttlecontrol();
+    SteeringControl();
     processPulse(); //Pulses must be processed slower than they come in (tick > 20ms)
   }
 
@@ -133,7 +136,10 @@ void loop() {
   //Tasks to run each datalog tick:
   if (currentMillis - previousMillisB >= intervalB) {
     previousMillisB = currentMillis;
-    if(!quietSerial && telemSerial)sendoldtelem();
+    if(!quietSerial && telemSerial){
+      sendoldtelem();
+    }
+    sendSteeringtelem();
     for (int z = 0; z <= 2; z++) {
       if (Hoverboard[z].enabled) {
         if(!quietSerial && telemSerial)sendHovertelem(Hoverboard[z].Feedback, z);

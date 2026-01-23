@@ -49,6 +49,11 @@ void initGPIO() {
   pinMode(RCCH4Pin, INPUT);
   pinMode(RCCH5Pin, INPUT);
   pinMode(RCCH6Pin, INPUT);
+
+  pinMode(SteerRISPin, OUTPUT);
+  pinMode(SteerLPWMPin, OUTPUT);
+  pinMode(SteerRPWMPin, OUTPUT);
+  pinMode(SteerRENPin, OUTPUT);
 }
 
 void initAnalog() {
@@ -58,6 +63,7 @@ void initAnalog() {
   ManualBrakeVal.begin(SMOOTHED_AVERAGE, 10);
   FuseADC.begin(SMOOTHED_AVERAGE, 10);
   ShuntADC.begin(SMOOTHED_AVERAGE, 10);
+  SteerCurr.begin(SMOOTHED_AVERAGE, 10);
 
   RCSteerPulse.begin(SMOOTHED_AVERAGE, 5);
   RCThrottlePulse.begin(SMOOTHED_AVERAGE, 5);
@@ -79,6 +85,7 @@ void processAnalog(){
   ManualBrakeVal.add(analogRead(BrakeHallPin));
   FuseADC.add(analogRead(FuseMonPin));
   ShuntADC.add(analogRead(ShuntMonPin));
+  SteerCurr.add(analogRead(SteerRISPin));
 }
 
 void processDigital(){
