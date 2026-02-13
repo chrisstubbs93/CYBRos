@@ -81,9 +81,17 @@ void Receive(Stream &port, SerialFeedback &Feedback, SerialFeedback &NewFeedback
                           ^ NewFeedback.batVoltage ^ NewFeedback.dcCurrent ^ NewFeedback.boardTemp ^ NewFeedback.cmdLed);
       // Check validity of the new data
       if (bufStartFrame == START_FRAME && checksum == NewFeedback.checksum) {
-          // Copy the new data
-          memcpy(&Feedback, &NewFeedback, sizeof(SerialFeedback));
-          lastTimestamp = millis();
+          memcpy(&Feedback, &NewFeedback, sizeof(SerialFeedback));// Copy the new data
+
+          if((millis() - lastTimestamp) > 200){
+          //print the timestamp delta for debugging
+          char TSinfo[128];
+          sprintf(TSinfo, "Hoverboard message period %lu", (millis() - lastTimestamp));
+          sendInfo(TSinfo);
+          }
+
+
+          lastTimestamp = millis(); //reset the last message timestamp
       } else {
         //decode fail
       }

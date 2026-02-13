@@ -37,14 +37,12 @@ int pot;
 
 int pedalval = 0;
 
-long intervalA = 50;  // time constant for PID loop tick //Pulses must be processed slower than they come in (tick > 20ms)
-long intervalB = 250;  // time constant for datalog loop tick
-long intervalC = 250;  // time constant for watchdog loop tick
+long intervalA = 25;  // time constant for PID loop tick //Pulses must be processed slower than they come in (tick > 20ms) //was 50!! May need to change fuse timing!!
+long intervalB = 50;
+long intervalC = 250;  // time constant for datalog loop tick
+long intervalD = 250;  // time constant for watchdog loop tick
 
-
-unsigned long previousMillisA = 0;
-unsigned long previousMillisB = 0;
-unsigned long previousMillisC = 0;
+unsigned long previousMillisA, previousMillisB, previousMillisC, previousMillisD = 0;
 
 void setup() {
   initGPIO();
@@ -112,6 +110,8 @@ void setup() {
 
 void loop() {
   unsigned long currentMillis = millis();  // store the current time
+  unsigned long Aloop,Bloop,Cloop,Dloop,Eloop; //for debugging
+  bool Atick, Btick, Ctick, Dtick = 0;
 
   //Tasks to run every loop:
   processAnalog();
@@ -123,23 +123,36 @@ void loop() {
   }
   cmd.poll(); //read and evaluate command line
 
+  Aloop = millis()-currentMillis; //for debugging
 
-  //Tasks to run each PID tick:
+  //Tasks to run each steering PID tick:
   if (currentMillis - previousMillisA >= intervalA) {
+    Atick = 1;
     previousMillisA = currentMillis;
     throttlecontrol();
-    SteeringControl();
-    processPulse(); //Pulses must be processed slower than they come in (tick > 20ms)
   }
 
+  Bloop = millis()-currentMillis; //for debugging
+
+    //Tasks to run each RC PID tick:
+  if (currentMillis - previousMillisB >= intervalB) {
+    Btick = 1;
+    previousMillisB = currentMillis;
+    SteeringControl();
+    if(currentGear == GEAR_N) processRCPulse(); //Only process RC inputs in neutral to improve response in normal drive. //Pulses must be processed slower than they come in (tick > 20ms)
+  }
+
+   Cloop = millis()-currentMillis; //for debugging
 
   //Tasks to run each datalog tick:
-  if (currentMillis - previousMillisB >= intervalB) {
-    previousMillisB = currentMillis;
+  if (currentMillis - previousMillisC >= intervalC) {
+    Ctick = 1;
+    previousMillisC = currentMillis;
     if(!quietSerial && telemSerial){
       sendoldtelem();
+      sendSteeringtelem();
+      if(currentGear == GEAR_N) sendRCtelem();
     }
-    sendSteeringtelem();
     for (int z = 0; z <= 2; z++) {
       if (Hoverboard[z].enabled) {
         if(!quietSerial && telemSerial)sendHovertelem(Hoverboard[z].Feedback, z);
@@ -147,18 +160,31 @@ void loop() {
     }
   }
 
-  
+  Dloop = millis()-currentMillis; //for debugging
+
+
   //Tasks to run each HB watchdog tick:
-  if (currentMillis - previousMillisC >= intervalC) {
-    previousMillisC = currentMillis;
+  if (currentMillis - previousMillisD >= intervalD) {
+    Dtick = 1;
+    previousMillisD = currentMillis;
     if(Hoverboard[0].enabled) isHoverboardConnected(0); //putting these in the loop makes the buzzer library shit the bed and I wish I knew why.
     if(Hoverboard[1].enabled) isHoverboardConnected(1);
     if(Hoverboard[2].enabled) isHoverboardConnected(2);
   }
-  // delay(20);   // RC inputs do not work without 20ms delay
-  // char looptime[128];
-  // sprintf(looptime, "Loop time: %i", (millis()-currentMillis));
-  // sendInfo(looptime);
+
+
+  if((millis()-currentMillis) > 100){
+  //print the timestamp delta for debugging
+    char looptime[128];
+    sprintf(looptime, "TLoop time: %i", (millis()-currentMillis));
+    sendInfo(looptime);
+
+    sprintf(looptime, "Breakdown A: %i, B: %i, C: %i, D: %I", Aloop, Bloop, Cloop, Dloop);
+    sendInfo(looptime);
+
+    sprintf(looptime, "Ticks this cycle: A: %i, B: %i, C: %i", Atick, Ctick, Dtick);
+    sendInfo(looptime);
+  }
 }
 
 void cmdHELP(int argCnt, char **args)

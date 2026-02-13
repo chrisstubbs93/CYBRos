@@ -30,9 +30,9 @@ double Steer_pwm;
 bool Steer_lockout = false;
 
 // PID for posn control
-double Steer_Posn_Pk = 1.5;  //speed it gets there
-double Steer_Posn_Ik = 0;
-double Steer_Posn_Dk = 0.1;
+double Steer_Posn_Pk = 1;  //speed it gets there was 1
+double Steer_Posn_Ik = 6; //was 6
+double Steer_Posn_Dk = 0.05; //was 0.05
 double Steer_Posn_Sp, Steer_Posn_Ip, Steer_Posn_Op;
 PID Steer_Posn_PID(&Steer_Posn_Ip, &Steer_Posn_Op, &Steer_Posn_Sp, Steer_Posn_Pk, Steer_Posn_Ik , Steer_Posn_Dk, DIRECT);
 
@@ -47,11 +47,11 @@ PID Steer_Curr_PID(&Steer_Curr_Ip, &Steer_Curr_Op, &Steer_ilim, Steer_Curr_Pk, S
 void setupSteeringControl(){
   Steer_Posn_PID.SetMode(AUTOMATIC);              // PID posn control loop
   Steer_Posn_PID.SetOutputLimits(-255, 255);
-  Steer_Posn_PID.SetSampleTime(20);
+  Steer_Posn_PID.SetSampleTime(intervalA);
 
   Steer_Curr_PID.SetMode(AUTOMATIC);              // PID constant current loop
   Steer_Curr_PID.SetOutputLimits(-255, 255);
-  Steer_Curr_PID.SetSampleTime(20);
+  Steer_Curr_PID.SetSampleTime(intervalA);
 
 }
 

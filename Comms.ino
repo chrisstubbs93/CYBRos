@@ -139,4 +139,21 @@ void sendHovertelem(SerialFeedback &Feedback, int hbnum) {
 }
 
 
+void sendRCtelem() {
+  sprintf(buf, "$RC");
+
+  //timestamp
+
+  sprintf(buf, "%s,%i", buf, RCSteerPulse.get());
+  sprintf(buf, "%s,%i", buf, RCThrottlePulse.get());
+  sprintf(buf, "%s,%i", buf, RCAuxPulse.get());
+
+  //checksum
+  sprintf(buf, "%s*%02X", buf, nmea0183_checksum(buf));
+
+  if(!quietSerial)Serial.println(buf);
+  logSD(buf);
+}
+
+
 

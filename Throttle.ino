@@ -38,10 +38,13 @@ void throttlecontrol() {
       drvcmd = 0;
       Send(0, drvcmd, brkcmd, currentDriveMode);
     }
+
     else {  //in drive or neutral
       drvcmd = constrain(map(AccelPedalVal.get(), AccelPedalStart, AccelPedalEnd, 0, maxthrottle), 0, 1200);
       brkcmd = 0;
-      if (digitalRead(DriveSwPin)) {
+
+      //Drive
+      if (currentGear == GEAR_D) {
         //calculate diff steering - only applied in drive
         strcmd = 0;
         #if defined(EnableDiffSteering)
@@ -57,10 +60,16 @@ void throttlecontrol() {
         strcmd = strcmd * DiffSteerCoeff;
         //only do PID throttle/fuse control in forward drive when not braking for safety
         Send(strcmd, ThrottleFuseControl(drvcmd), brkcmd, currentDriveMode);  //TODO is this a good idea? Should we at least be feeding the PID loop at all times?
-      }                                                                       //end of drive
-      else if (digitalRead(RevSwPin)) {
+      }
+
+      //Reverse
+      if (currentGear == GEAR_R) { 
         Send(0, -drvcmd * revspd, brkcmd, currentDriveMode);
-      } else {                        //in neutral (also RC mode)
+      } 
+      
+
+      //in neutral (also RC mode)
+      if(currentGear == GEAR_N) {                        
         if (RCAuxPulse.get() > RCAuxMid) {  //RC Aux Switch turned ON to activate remote mode
         RCModeActive = true;
           if (RCThrottlePulse.get() > RCThrottleMid) {  //fwd
@@ -78,6 +87,7 @@ void throttlecontrol() {
           Send(0, 0, 0, currentDriveMode);
         }
       }
+
     }
   }
 }

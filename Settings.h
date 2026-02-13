@@ -89,7 +89,7 @@
 #define START_FRAME         0xABCD       // [-] Start frme definition for reliable serial communication
 #define SPD_MODE            2            // [-] SPEED mode
 #define TRQ_MODE            3            // [-] TORQUE mode
-#define HB_TIMEOUT          950          // in ms for warning 
+#define HB_TIMEOUT          950          // in ms for warning //occasionaly get 1200ms timeouts
 #define HB_TIMEOUT_START    1450          // in ms to triger restart // battery startup takes 7.48s. Hotstart from USB takes 4.8s
 #define HB_RESTART_WAIT     5000          // in ms before retrying restart //hb takes about 2.5 seconds to restart and clear comms
 
@@ -132,7 +132,7 @@ int pedaldeadband = 50;
   #define SteerRight  512+256
   //#define EnableDiffSteering
 #elif defined(CONFIG_CYBRTRK)
-  #define SteerCentre 476 
+  #define SteerCentre 467 
   #define SteerLeft  329 //301 348
   #define SteerRight  580 //562 588
   #define EnableDiffSteering

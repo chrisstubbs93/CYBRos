@@ -6,6 +6,12 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
+#define GEAR_N            0            // Neutral
+#define GEAR_D            1            // Drive
+#define GEAR_R            2            // Reverse
+
+int currentGear = GEAR_N;
+
 double Input3Fuse, Output3Throttle, Input3FuseMaxHold;
 double throttleSpMonitor;
 int brkcmd;

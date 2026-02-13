@@ -72,7 +72,7 @@ void initAnalog() {
   //before doing anything, feed the analog smoothing with at least the smoothing factor n samples
   for (int i = 0; i < 10; i ++) {
     processAnalog();
-    processPulse();
+    processRCPulse();
     delay(25);
   }
 }
@@ -118,9 +118,20 @@ void processDigital(){
     analogWrite(RLightPin, 15); 
   }
 
+  //Read gear
+  if (digitalRead(DriveSwPin)) {
+    currentGear = GEAR_D;
+  }
+  else if(digitalRead(RevSwPin)){
+    currentGear = GEAR_R;
+  }
+  else{
+    currentGear = GEAR_N;
+  }
+
 }
 
-void processPulse(){
+void processRCPulse(){
   // Read RC inputs (timeout prevents lockup if signal missing)
   RCSteerPulse.add(pulseIn(RCCH1Pin, HIGH, 25000));  // Steer
   RCThrottlePulse.add(pulseIn(RCCH2Pin, HIGH, 25000));  // Throttle
