@@ -72,10 +72,11 @@ void throttlecontrol() {
       if(currentGear == GEAR_N) {                        
         if (RCAuxPulse.get() > RCAuxMid) {  //RC Aux Switch turned ON to activate remote mode
         RCModeActive = true;
-          if (RCThrottlePulse.get() > RCThrottleMid) {  //fwd
-            drvcmd = constrain(map(RCThrottlePulse.get(), RCThrottleMid, RCThrottleF, 0, RCMaxSpeed), 0, RCMaxSpeed);
-          } else {  //rev
-            drvcmd = constrain(map(RCThrottlePulse.get(), RCThrottleMid, RCThrottleR, 0, -RCMaxSpeed), -RCMaxSpeed * revspd, 0);
+          if (RCThrottlePulse.get() > RCThrottleMid + RCThrottleDeadzone) {  //fwd (+ deadzone)
+            drvcmd = constrain(map(RCThrottlePulse.get(), RCThrottleMid + RCThrottleDeadzone, RCThrottleF, 0, RCMaxSpeed), 0, RCMaxSpeed);
+          }
+          if (RCThrottlePulse.get() < RCThrottleMid - RCThrottleDeadzone) {  //rev (- deadzone)
+            drvcmd = constrain(map(RCThrottlePulse.get(), RCThrottleMid - RCThrottleDeadzone, RCThrottleR, 0, -RCMaxSpeed), -RCMaxSpeed * revspd, 0);
           }
           //strcmd = constrain(map(RCSteerPulse.get(), RCSteerR, RCSteerL, -RCMaxSpeed, RCMaxSpeed), -RCMaxSpeed, RCMaxSpeed);
           strcmd = 0;

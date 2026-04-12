@@ -112,6 +112,7 @@ int RHB2powerSplit = RHB1powerSplit; //% max power of rear2 HB in TRQ mode DISAB
 #define RCThrottleF 1650
 #define RCThrottleMid 1435
 #define RCThrottleR 895
+#define RCThrottleDeadzone 40
 #define RCAuxMid 1450 //> = on
 
 #define Brakehallthreshold 250
