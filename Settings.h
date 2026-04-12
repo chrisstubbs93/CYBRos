@@ -105,7 +105,7 @@ int FHBpowerSplit = maxthrottleTRQ*0.50; //% max power of front HB in TRQ mode D
 int RHB1powerSplit = maxthrottleTRQ*1.00; //% max power of rear1 HB in TRQ mode DISABLED
 int RHB2powerSplit = RHB1powerSplit; //% max power of rear2 HB in TRQ mode DISABLED
 
-#define RCMaxSpeed 25
+#define RCMaxSpeed 100 //was 25
 #define RCSteerL 895
 #define RCSteerMid 1425
 #define RCSteerR 1950

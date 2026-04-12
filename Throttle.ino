@@ -16,7 +16,7 @@ PID FusePID(&Input3Fuse, &Output3Throttle, &FuseIlim, Fuse_Pk, Fuse_Ik, Fuse_Dk,
 void setupThrottleFuseControl() {
   FusePID.SetMode(AUTOMATIC);  // PID constant current loop
   FusePID.SetOutputLimits(0, 1200);
-  FusePID.SetSampleTime(20);
+  FusePID.SetSampleTime(20); //tick runs at 50ms, but it's always been like this and I'm too scared to change the tuning
 }
 
 
