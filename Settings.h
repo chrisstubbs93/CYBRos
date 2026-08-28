@@ -132,11 +132,15 @@ int pedaldeadband = 50;
   #define SteerLeft  256
   #define SteerRight  512+256
   //#define EnableDiffSteering
+  #define EnableEbrake 1
+  //#define EnableRC
 #elif defined(CONFIG_CYBRTRK)
   #define SteerCentre 467 
   #define SteerLeft  329 //301 348
   #define SteerRight  580 //562 588
   #define EnableDiffSteering
+  #define EnableEbrake 0
+  //#define EnableRC
 #else
 #error HACKY CONFIG NOT SELECTED
 #endif

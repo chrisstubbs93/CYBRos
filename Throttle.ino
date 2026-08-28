@@ -22,8 +22,7 @@ void setupThrottleFuseControl() {
 
 void throttlecontrol() {
   //Handle braking
-  if (analogRead(BrakeHallPin) > Brakehallthreshold) {  //if emergency brake (or parking brake are applied || digitalRead(ParkSwPin) REMOVED)
-    //if trq mode
+  if ((analogRead(BrakeHallPin) > Brakehallthreshold) && EnableEbrake) {  //if emergency brake is applied with EBRAKE enabled
     manualBraking = true;
     drvcmd = 0;
     brkcmd = 1000;

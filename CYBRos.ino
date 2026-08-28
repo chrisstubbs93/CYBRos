@@ -125,7 +125,7 @@ void loop() {
 
   Aloop = millis()-currentMillis; //for debugging
 
-  //Tasks to run each steering PID tick:
+  //Tasks to run each Throttle PID tick:
   if (currentMillis - previousMillisA >= intervalA) {
     Atick = 1;
     previousMillisA = currentMillis;
@@ -134,12 +134,14 @@ void loop() {
 
   Bloop = millis()-currentMillis; //for debugging
 
-    //Tasks to run each RC PID tick:
+    //Tasks to run each RC/Steering PID tick:
   if (currentMillis - previousMillisB >= intervalB) {
     Btick = 1;
     previousMillisB = currentMillis;
-    SteeringControl();
-    if(currentGear == GEAR_N) processRCPulse(); //Only process RC inputs in neutral to improve response in normal drive. //Pulses must be processed slower than they come in (tick > 20ms)
+    #if defined(EnableRC)
+      SteeringControl();
+      if(currentGear == GEAR_N) processRCPulse(); //Only process RC inputs in neutral to improve response in normal drive. //Pulses must be processed slower than they come in (tick > 20ms)
+    #endif
   }
 
    Cloop = millis()-currentMillis; //for debugging
@@ -151,7 +153,9 @@ void loop() {
     if(!quietSerial && telemSerial){
       sendoldtelem();
       sendSteeringtelem();
-      if(currentGear == GEAR_N) sendRCtelem();
+      #if defined(EnableRC)
+        if(currentGear == GEAR_N) sendRCtelem();
+      #endif
     }
     for (int z = 0; z <= 2; z++) {
       if (Hoverboard[z].enabled) {
@@ -179,10 +183,10 @@ void loop() {
     sprintf(looptime, "TLoop time: %i", (millis()-currentMillis));
     sendInfo(looptime);
 
-    sprintf(looptime, "Breakdown A: %i, B: %i, C: %i, D: %I", Aloop, Bloop, Cloop, Dloop);
+    sprintf(looptime, "Breakdown A: %i, B: %i, C: %i, D: %i", Aloop, Bloop, Cloop, Dloop);
     sendInfo(looptime);
 
-    sprintf(looptime, "Ticks this cycle: A: %i, B: %i, C: %i", Atick, Ctick, Dtick);
+    sprintf(looptime, "Ticks this cycle: A: %i, B: %i, C: %i", Atick, Btick, Ctick, Dtick);
     sendInfo(looptime);
   }
 }
