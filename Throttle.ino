@@ -15,7 +15,7 @@ PID FusePID(&Input3Fuse, &Output3Throttle, &FuseIlim, Fuse_Pk, Fuse_Ik, Fuse_Dk,
 
 void setupThrottleFuseControl() {
   FusePID.SetMode(AUTOMATIC);  // PID constant current loop
-  FusePID.SetOutputLimits(0, 1200);
+  FusePID.SetOutputLimits(0, 1000);
   FusePID.SetSampleTime(20); //tick runs at 50ms, but it's always been like this and I'm too scared to change the tuning
 }
 
@@ -39,7 +39,7 @@ void throttlecontrol() {
     }
 
     else {  //in drive or neutral
-      drvcmd = constrain(map(AccelPedalVal.get(), AccelPedalStart, AccelPedalEnd, 0, maxthrottle), 0, 1200);
+      drvcmd = constrain(map(AccelPedalVal.get(), AccelPedalStart, AccelPedalEnd, 0, maxthrottle), 0, 1000);
       brkcmd = 0;
 
       //Drive
@@ -112,6 +112,7 @@ int ThrottleFuseControl(int throttleSP) {
   if (abs(throttleSP) <= abs(Output3Throttle)) {
     //throttle mode
     fusecurrentLimiting = false;
+    
     return throttleSP;
   } else {
     //i lim mode
@@ -119,4 +120,5 @@ int ThrottleFuseControl(int throttleSP) {
     buzzerEvent(1);
     return Output3Throttle;
   }
+      
 }

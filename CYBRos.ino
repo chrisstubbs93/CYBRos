@@ -152,8 +152,8 @@ void loop() {
     previousMillisC = currentMillis;
     if(!quietSerial && telemSerial){
       sendoldtelem();
-      sendSteeringtelem();
       #if defined(EnableRC)
+        sendSteeringtelem();
         if(currentGear == GEAR_N) sendRCtelem();
       #endif
     }

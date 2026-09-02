@@ -98,8 +98,8 @@ int PedalCentre = 550;//old
 float revspd = 0.8; //reverse throttle map multiplier
 float DiffSteerCoeff = 1; //Diff steer weighting multiplier
 
-int maxthrottleTRQ = 1200; //Max throttle command (in TRQ mode)
-int maxthrottleSPD = 1200; //Max throttle command (in SPD mode) //was 100
+int maxthrottleTRQ = 1000; //Max throttle command (in TRQ mode)
+int maxthrottleSPD = 1000; //Max throttle command (in SPD mode) //was 100
 
 int FHBpowerSplit = maxthrottleTRQ*0.50; //% max power of front HB in TRQ mode DISABLED
 int RHB1powerSplit = maxthrottleTRQ*1.00; //% max power of rear1 HB in TRQ mode DISABLED

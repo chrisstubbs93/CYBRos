@@ -87,11 +87,18 @@ void SDinit(){
 }
 
 void logSD(char *msg){
+  static int flushCounter = 0;
   if(dataLogFile){
     char logsdmsg[150];
     sprintf(logsdmsg, "%lu>%s", millis(), msg);
     dataLogFile.println(logsdmsg);
-    dataLogFile.flush();
+    
+    // Only flush every 10 messages to avoid blocking real-time loop
+    flushCounter++;
+    if(flushCounter >= 10) {
+      dataLogFile.flush();
+      flushCounter = 0;
+    }
   }
 }
 
