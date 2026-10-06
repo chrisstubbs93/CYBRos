@@ -14,7 +14,7 @@
 #include <SD.h>
 //https://github.com/SpacehuhnTech/SimpleCLI
 #include "cmdArduino.h" //https://freaklabs.org/cmdarduino/
-
+#include <EEPROM.h>
 #include "Settings.h"
 #include "Globals.h"
 
@@ -44,18 +44,39 @@ long intervalD = 250;  // time constant for watchdog loop tick
 
 unsigned long previousMillisA, previousMillisB, previousMillisC, previousMillisD = 0;
 
+const uint32_t BT_SETUP_BAUD = 9600;
+const uint32_t NORMAL_BAUD = 115200;
+
+struct BaudConfig {
+    uint32_t baud;
+    uint8_t pending;
+};
+
+BaudConfig baudConfig;
+
 void setup() {
   initGPIO();
   initAnalog();
 
   //Serial.begin(115200);              //Serial to USB / Interface
-  cmd.begin(9600); //init at lower speed for  bt modem
+  cmd.begin(BT_SETUP_BAUD); //init at lower speed for  bt modem
   delay(200);
   Serial.print("AT+NAMECYBR");
   delay(200);
   Serial.print("AT+BAUD8"); //115200 baud serial bt modem
   delay(500);
-  cmd.begin(115200); //switch to 115200
+  //cmd.begin(NORMAL_BAUD); //switch to 115200
+  //open serial port at high speed after reset if requested in EEPROM flag
+  EEPROM.get(0, baudConfig);
+  uint32_t baud = NORMAL_BAUD;
+    if (baudConfig.pending == 1) {
+        baud = baudConfig.baud;
+        // Consume the one-shot setting immediately.
+        baudConfig.pending = 0;
+        EEPROM.put(0, baudConfig);
+    }
+  cmd.begin(baud);
+
   Serial1.begin(HOVER_SERIAL_BAUD);  //Serial to front HB
   Serial2.begin(HOVER_SERIAL_BAUD);  //Serial to rear HB 1
   Serial3.begin(HOVER_SERIAL_BAUD);  //Serial to rear HB 2
@@ -235,9 +256,14 @@ void cmdS(int argCnt, char **args)
 
 void cmdBR(int argCnt, char **args)
 {
-  Serial.flush();
-  Serial.begin(atol(args[1]));
-  while(Serial.available()) Serial.read();
+    uint32_t baud = atol(args[1]);
+    Serial.flush();
+    BaudConfig config;
+    config.baud = baud;
+    config.pending = 1;
+    EEPROM.put(0, config);
+    Serial.begin(baud);
+     while(Serial.available()) Serial.read();
 }
 
 void cmdDEL(int argCnt, char **args)
